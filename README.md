@@ -1,2 +1,2 @@
 # Go-SCP
-Go programming language secure coding practices guide
+Go programming language secure coding practices guide.
