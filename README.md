@@ -16,15 +16,15 @@ what kind of security problems could arise during development.
 
 ## About Checkmarx
 
-[Checkmarx][2] was founded in 2006 with the vision of providing comprehensive
-solutions for automated security code review. The company pioneered the concept
-of a query language-based solution for identifying technical and logical code
-vulnerabilities.
+Checkmarx is an Application Security software company, whose mission is to
+provide enterprise organizations with application security testing products
+and services that empower developers to deliver secure applications. Amongst
+the company's 1,000 customers are five of the world's top 10 software vendors,
+four of the top American banks, and many Fortune 500 and government
+organizations, including SAP, Samsung and Salesforce.com.
 
-Checkmarx's staff is committed to both customers and technology innovation. Our
-research and development goes side by side with our business operations and is
-driven by the goal of providing the best possible products and services to our
-customers.
+For more information about Checkmarx, visit [http://www.checkmarx.com][2]
+or follow us on Twitter: @checkmarx
 
 ## About OWASP Secure Coding Practices
 
