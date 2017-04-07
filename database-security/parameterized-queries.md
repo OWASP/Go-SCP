@@ -5,8 +5,8 @@ Prepared Statements (with Parameterized Queries) are the best and most secure
 way to protect against SQL Injections.
 
 In some reported situations, prepared statements could harm performance of the
-web application. Therefore, if for any reason you need to stop using this type of
-database queries, we strongly suggest to read [Input Validation][1] and
+web application. Therefore, if for any reason you need to stop using this type
+of database queries, we strongly suggest to read [Input Validation][1] and
 [Output Encoding][2] sections.
 
 Go works differently from usual prepared statements on other languages - you
@@ -42,3 +42,6 @@ reasons for this:
   issues are handled in another layer of our application stack
   (See: [Input Validation][1] and [Output Encoding][2]), so performance
   as seen above is undesired.
+
+[1]: /input-validation/README.md
+[2]: /output-encodeing/README.md

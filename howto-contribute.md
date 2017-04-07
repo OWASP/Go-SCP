@@ -1,6 +1,18 @@
 How To Contribute
 =================
 
+This project is based on GitHub and can be accessed by [clicking here][15].
+
+Here are the basic of contributing to GitHub:
+
+1. Fork and clone the project
+2. Set up the project locally
+3. Create an upstream remote and sync your local copy
+4. Branch each set of work
+5. Push the work to your own repository
+6. Create a new pull request
+7. Look out for any code feedback and respond accordingly
+
 This book was built from ground-up in a "collaborative fashion", using a small
 set of Open Source tools and technologies.
 
@@ -105,3 +117,4 @@ The shell output will include a `localhost` URL where you can preview the book.
 [11]: https://github.com/jaspernbrouwer/git-flow-hooks#install
 [12]: https://github.com/GitbookIO/gitbook-cli#how-to-install-it
 [14]: http://help.github.com/articles/about-pull-requests
+[15]: https://github.com/Checkmarx/Go-SCP

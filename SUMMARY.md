@@ -33,4 +33,4 @@ Summary
 * [File Management](file-management/README.md)
 * [Memory Management](memory-management/README.md)
 * [General Coding Practices](general-coding-practices.md)
-* [How to contribute](howto-contribute.md)
+* [How To Contribute](howto-contribute.md)
