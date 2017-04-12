@@ -1,8 +1,11 @@
 Validation and Storing authentication data
 ==========================================
 
+Validation
+----------
+
 The key subject of this section is the authentication data storage, as more
-often than desirable, user account databases are leaked on the internet.
+often than desirable, user account databases are leaked on the Internet.
 Of course that this is not guaranteed to happen, but in the case of such
 an event, collateral damages can be avoided if authentication data,
 especially passwords, are stored properly.
@@ -15,6 +18,10 @@ reporting back wrong authentication data and how to handle logging.
 One other preliminary recommendation: for sequential authentication
 implementations (like Google does nowadays), validation should happen only on
 the completion of all data input, on a trusted system (e.g. the server).
+
+
+Storing password securely: the theory
+-------------------------------------
 
 Now let's talk about storing passwords.
 
@@ -55,53 +62,72 @@ Last recommendations.
 * Avoid using SHA1 as it has been cracked recently.
 * Read the [Pseudo-Random Generators section][1].
 
+
+Storing password securely: the practice
+---------------------------------------
+
+One of the most important adage in cryptography is: **never write your own
+crypto**. By not doing so, one can put at risk the entire application. It is a
+sensitive and complex topic. Hopefully, cryptography provides tools and
+standards reviewed and approved by experts. It is therefore important to use
+them instead of trying to re-invent the wheel.
+
+In the case of password storage, the hashing algorithms recommended by
+[OWASP][2] are [`bcrypt`][2], [`PDKDF2`][3], `Argon2` and [`scrypt`][4]. Those
+take care of hashing and salting passwords in a robust way. Go authors provides
+an extended package for cryptography, that is not part of the standard library.
+It provides robust implementations for most of the aforementioned algorithms. It
+can be downloaded using  `go get`:
+
+```
+go get golang.org/x/crypto
+```
+
+The following example shows how to use bcrypt, which should be good enough for
+most of the situations. The advantage of bcrypt is that it is simpler to use and
+is therefore less error-prone.
+
 ```go
 package main
 
-import "crypto/rand"
-import "crypto/sha256"
-import "database/sql"
-import "fmt"
-import "io"
+import (
+    "database/sql"
+    "fmt"
 
-const SaltSize = 16
+    "golang.org/x/crypto/bcrypt"
+)
 
 func main() {
     email := []byte("john.doe@somedomain.com")
     password := []byte("47;u5:B(95m72;Xq")
 
-    // create random word
-    salt := make([]byte, SaltSize)
-    _, err := io.ReadFull(rand.Reader, salt)
+    // Hash the password with bcrypt
+    hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
     if err != nil {
         panic(err)
     }
-
-    // let's create SHA256(password+salt)
-    hash := sha256.New()
-    hash.Write(password)
-    hash.Write(salt)
 
     // this is here just for demo purposes
     //
-    // fmt.Printf("email   : %s\n", string(email))
-    // fmt.Printf("password: %s\n", string(password))
-    // fmt.Printf("salt    : %x\n", salt)
-    // fmt.Printf("hash    : %x\n", hash.Sum(nil))
+    // fmt.Printf("email          : %s\n", string(email))
+    // fmt.Printf("password       : %s\n", string(password))
+    // fmt.Printf("hashed password: %x\n", hashedPassword)
 
     // you're supposed to have a database connection
-    stmt, err := db.Prepare("INSERT INTO accounts SET hash=?,salt=?,email=?")
+    stmt, err := db.Prepare("INSERT INTO accounts SET hash=?, email=?")
     if err != nil {
         panic(err)
     }
-    result, err := stmt.Exec(email, h, salt)
+    result, err := stmt.Exec(hashedPassword, email)
     if err != nil {
         panic(err)
     }
-
 }
 ```
 
 [^1]: Hashing functions are the subject of Collisions but recommended hashing functions have a really low collisions probability
 
 [1]: /cryptographic-practices/pseudo-random-generators.md
+[2]: https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet
+[3]: https://godoc.org/golang.org/x/crypto/bcrypt
+[4]: https://godoc.org/golang.org/x/crypto/pbkdf2
