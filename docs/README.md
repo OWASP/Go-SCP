@@ -24,7 +24,7 @@ four of the top American banks, and many Fortune 500 and government
 organizations, including SAP, Samsung and Salesforce.com.
 
 For more information about Checkmarx, visit [http://www.checkmarx.com][2]
-or follow us on Twitter: @checkmarx
+or follow us on Twitter: [@checkmarx][7]
 
 ## About OWASP Secure Coding Practices
 
@@ -50,3 +50,4 @@ If you're curious about how we built it from scratch, read the
 [4]: https://www.owasp.org
 [5]: https://www.owasp.org/index.php/About_OWASP
 [6]: /howto-contribute.md
+[7]: https://www.twitter.com/checkmarx
