@@ -1,0 +1,26 @@
+{
+  "name": "go-webapp-scp",
+  "version": "0.0.0",
+  "description": "Go Web Applications Secure Coding Practices",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "gitbook-cli": "^2.3.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "node_modules/.bin/gitbook serve",
+    "build-pdf": "node_modules/.bin/gitbook pdf ./ ./build/go-webapp-scp.pdf",
+    "build-epub": "node_modules/.bin/gitbook epub ./ ./build/go-webapp-scp.epub",
+    "build-mobi": "node_modules/.bin/gitbook mobi ./ ./build/go-webapp-scp.mobi",
+    "build": "npm run build-pdf; npm run build-epub; npm run build-mobi"
+  },
+  "keywords": [
+    "Go",
+    "WebApp",
+    "Security",
+    "Checkmarx"
+  ],
+  "author": "Checkmarx Security Research Team",
+  "license": "GPL-3.0"
+}

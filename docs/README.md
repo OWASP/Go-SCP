@@ -49,4 +49,4 @@ If you're curious about how we built it from scratch, read the
 [3]: https://www.owasp.org/index.php/OWASP_Secure_Coding_Practices_-_Quick_Reference_Guide
 [4]: https://www.owasp.org
 [5]: https://www.owasp.org/index.php/About_OWASP
-[6]: docs/howto-contribute.md
+[6]: /howto-contribute.md
