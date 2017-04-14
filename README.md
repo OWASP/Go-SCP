@@ -1,3 +1,9 @@
+The [GitBook][8] version of this book, for easy online reading, can be found here:
+[https://checkmarx.gitbooks.io/go-scp][9]
+
+The book can be downloaded in PDF, Mobi and ePub formats here:
+[https://www.gitbook.com/book/checkmarx/go-scp][10]
+
 # Introduction
 
 Go Language - Web Application Secure Coding Practices is a guide written for
@@ -24,7 +30,7 @@ four of the top American banks, and many Fortune 500 and government
 organizations, including SAP, Samsung and Salesforce.com.
 
 For more information about Checkmarx, visit [http://www.checkmarx.com][2]
-or follow us on Twitter: @checkmarx
+or follow us on Twitter: [@checkmarx][7]
 
 ## About OWASP Secure Coding Practices
 
@@ -50,3 +56,7 @@ If you're curious about how we built it from scratch, read the
 [4]: https://www.owasp.org
 [5]: https://www.owasp.org/index.php/About_OWASP
 [6]: docs/howto-contribute.md
+[7]: https://www.twitter.com/checkmarx
+[8]: https://www.gitbook.com/
+[9]: https://checkmarx.gitbooks.io/go-scp/
+[10]: https://www.gitbook.com/book/checkmarx/go-scp/
