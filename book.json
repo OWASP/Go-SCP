@@ -1,5 +1,5 @@
 {
     "author": "Checkmarx Security Research Team",
     "language": "en_US",
-    "root": "./docs"
+    "root": "./src"
 }
