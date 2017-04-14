@@ -5,7 +5,7 @@ In this section, "communication" is used in a broader sense, encompassing
 User Experience (UX) and client-server communication.
 
 Not only is it true that "_password entry should be obscured on user's screen_"
-but also the "_remember me functionality should be disabled_".
+but also the "_remeber me functionality should be disabled_".
 
 You can accomplish both using an input field with `type="password"`, and
 setting the `autocomplete` attribute to `off`[^1]
