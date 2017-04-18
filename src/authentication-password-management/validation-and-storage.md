@@ -128,11 +128,11 @@ standards reviewed and approved by experts. It is therefore important to use
 them instead of trying to re-invent the wheel.
 
 In the case of password storage, the hashing algorithms recommended by
-[OWASP][2] are [`bcrypt`][2], [`PDKDF2`][3], `Argon2` and [`scrypt`][4]. Those
-take care of hashing and salting passwords in a robust way. Go authors provides
-an extended package for cryptography, that is not part of the standard library.
-It provides robust implementations for most of the aforementioned algorithms. It
-can be downloaded using  `go get`:
+[OWASP][2] are [`bcrypt`][2], [`PDKDF2`][3], [`Argon2`][4] and [`scrypt`][5].
+Those take care of hashing and salting passwords in a robust way. Go authors
+provides an extended package for cryptography, that is not part of the standard
+library. It provides robust implementations for most of the aforementioned
+algorithms. It can be downloaded using  `go get`:
 
 ```
 go get golang.org/x/crypto
@@ -185,4 +185,5 @@ func main() {
 [1]: /cryptographic-practices/pseudo-random-generators.md
 [2]: https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet
 [3]: https://godoc.org/golang.org/x/crypto/bcrypt
-[4]: https://godoc.org/golang.org/x/crypto/pbkdf2
+[4]: https://github.com/p-h-c/phc-winner-argon2
+[5]: https://godoc.org/golang.org/x/crypto/pbkdf2
