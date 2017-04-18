@@ -1,7 +1,7 @@
 Input Validation
 ===============
 
-In web application security, user input and it's associated data are a security
+In web application security, user input and its associated data are a security
 risk if left unchecked.
 We address these problems by using "Input Validation" and "Input Sanitization"
 techniques.
