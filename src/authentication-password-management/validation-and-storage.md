@@ -62,6 +62,61 @@ Last recommendations.
 * Avoid using SHA1 as it has been cracked recently.
 * Read the [Pseudo-Random Generators section][1].
 
+The following example shows a basic example of how this works:
+
+```go
+package main
+
+import (
+    "crypto/rand"
+    "crypto/sha256"
+    "database/sql"
+    "fmt"
+    "io"
+)
+
+const saltSize = 32
+
+func main() {
+    email := []byte("john.doe@somedomain.com")
+    password := []byte("47;u5:B(95m72;Xq")
+
+    // create random word
+    salt := make([]byte, saltSize)
+    _, err := io.ReadFull(rand.Reader, salt)
+    if err != nil {
+        panic(err)
+    }
+
+    // let's create SHA256(password+salt)
+    hash := sha256.New()
+    hash.Write(password)
+    hash.Write(salt)
+
+    // this is here just for demo purposes
+    //
+    // fmt.Printf("email   : %s\n", string(email))
+    // fmt.Printf("password: %s\n", string(password))
+    // fmt.Printf("salt    : %x\n", salt)
+    // fmt.Printf("hash    : %x\n", hash.Sum(nil))
+
+    // you're supposed to have a database connection
+    stmt, err := db.Prepare("INSERT INTO accounts SET hash=?,salt=?,email=?")
+    if err != nil {
+        panic(err)
+    }
+    result, err := stmt.Exec(email, h, salt)
+    if err != nil {
+        panic(err)
+    }
+
+}
+```
+
+However, this approach has several flaws and should not be used. It is given
+here only to illustrate the theory with a practical example. The next section
+explains how to correctly salt passwords in real life.
+
 
 Storing password securely: the practice
 ---------------------------------------
