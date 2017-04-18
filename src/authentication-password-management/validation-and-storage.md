@@ -180,6 +180,27 @@ func main() {
 }
 ```
 
+Bcrypt also provides a simple and secure way to compare a plaintext password
+with an already hashed password:
+
+ ```go
+ // credentials to validate
+ email := []byte("john.doe@somedomain.com")
+ password := []byte("47;u5:B(95m72;Xq")
+
+// fetch the hashed password corresponding to the provided email
+record := db.QueryRow("SELECT hash FROM accounts WHERE email = ? LIMIT 1", email)
+
+var expectedPassword string
+if err := record.Scan(&expectedPassword); err != nil {
+    // user does not exist
+}
+
+if bcrypt.CompareHashAndPassword(password, []byte(expectedPassword)) != nil {
+    // passwords do not match
+}
+ ```
+
 [^1]: Hashing functions are the subject of Collisions but recommended hashing functions have a really low collisions probability
 
 [1]: /cryptographic-practices/pseudo-random-generators.md
