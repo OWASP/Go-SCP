@@ -1,8 +1,11 @@
 Validation and Storing authentication data
 ==========================================
 
+Validation
+----------
+
 The key subject of this section is the authentication data storage, as more
-often than desirable, user account databases are leaked on the internet.
+often than desirable, user account databases are leaked on the Internet.
 Of course that this is not guaranteed to happen, but in the case of such
 an event, collateral damages can be avoided if authentication data,
 especially passwords, are stored properly.
@@ -15,6 +18,10 @@ reporting back wrong authentication data and how to handle logging.
 One other preliminary recommendation: for sequential authentication
 implementations (like Google does nowadays), validation should happen only on
 the completion of all data input, on a trusted system (e.g. the server).
+
+
+Storing password securely: the theory
+-------------------------------------
 
 Now let's talk about storing passwords.
 
@@ -55,23 +62,27 @@ Last recommendations.
 * Avoid using SHA1 as it has been cracked recently.
 * Read the [Pseudo-Random Generators section][1].
 
+The following example shows a basic example of how this works:
+
 ```go
 package main
 
-import "crypto/rand"
-import "crypto/sha256"
-import "database/sql"
-import "fmt"
-import "io"
+import (
+    "crypto/rand"
+    "crypto/sha256"
+    "database/sql"
+    "fmt"
+    "io"
+)
 
-const SaltSize = 16
+const saltSize = 32
 
 func main() {
     email := []byte("john.doe@somedomain.com")
     password := []byte("47;u5:B(95m72;Xq")
 
     // create random word
-    salt := make([]byte, SaltSize)
+    salt := make([]byte, saltSize)
     _, err := io.ReadFull(rand.Reader, salt)
     if err != nil {
         panic(err)
@@ -102,6 +113,98 @@ func main() {
 }
 ```
 
+However, this approach has several flaws and should not be used. It is given
+here only to illustrate the theory with a practical example. The next section
+explains how to correctly salt passwords in real life.
+
+
+Storing password securely: the practice
+---------------------------------------
+
+One of the most important adage in cryptography is: **never write your own
+crypto**. By not doing so, one can put at risk the entire application. It is a
+sensitive and complex topic. Hopefully, cryptography provides tools and
+standards reviewed and approved by experts. It is therefore important to use
+them instead of trying to re-invent the wheel.
+
+In the case of password storage, the hashing algorithms recommended by
+[OWASP][2] are [`bcrypt`][2], [`PDKDF2`][3], [`Argon2`][4] and [`scrypt`][5].
+Those take care of hashing and salting passwords in a robust way. Go authors
+provides an extended package for cryptography, that is not part of the standard
+library. It provides robust implementations for most of the aforementioned
+algorithms. It can be downloaded using  `go get`:
+
+```
+go get golang.org/x/crypto
+```
+
+The following example shows how to use bcrypt, which should be good enough for
+most of the situations. The advantage of bcrypt is that it is simpler to use and
+is therefore less error-prone.
+
+```go
+package main
+
+import (
+    "database/sql"
+    "fmt"
+
+    "golang.org/x/crypto/bcrypt"
+)
+
+func main() {
+    email := []byte("john.doe@somedomain.com")
+    password := []byte("47;u5:B(95m72;Xq")
+
+    // Hash the password with bcrypt
+    hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+    if err != nil {
+        panic(err)
+    }
+
+    // this is here just for demo purposes
+    //
+    // fmt.Printf("email          : %s\n", string(email))
+    // fmt.Printf("password       : %s\n", string(password))
+    // fmt.Printf("hashed password: %x\n", hashedPassword)
+
+    // you're supposed to have a database connection
+    stmt, err := db.Prepare("INSERT INTO accounts SET hash=?, email=?")
+    if err != nil {
+        panic(err)
+    }
+    result, err := stmt.Exec(hashedPassword, email)
+    if err != nil {
+        panic(err)
+    }
+}
+```
+
+Bcrypt also provides a simple and secure way to compare a plaintext password
+with an already hashed password:
+
+ ```go
+ // credentials to validate
+ email := []byte("john.doe@somedomain.com")
+ password := []byte("47;u5:B(95m72;Xq")
+
+// fetch the hashed password corresponding to the provided email
+record := db.QueryRow("SELECT hash FROM accounts WHERE email = ? LIMIT 1", email)
+
+var expectedPassword string
+if err := record.Scan(&expectedPassword); err != nil {
+    // user does not exist
+}
+
+if bcrypt.CompareHashAndPassword(password, []byte(expectedPassword)) != nil {
+    // passwords do not match
+}
+ ```
+
 [^1]: Hashing functions are the subject of Collisions but recommended hashing functions have a really low collisions probability
 
 [1]: /cryptographic-practices/pseudo-random-generators.md
+[2]: https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet
+[3]: https://godoc.org/golang.org/x/crypto/bcrypt
+[4]: https://github.com/p-h-c/phc-winner-argon2
+[5]: https://godoc.org/golang.org/x/crypto/pbkdf2
