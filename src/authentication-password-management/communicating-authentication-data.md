@@ -5,7 +5,7 @@ In this section, "communication" is used in a broader sense, encompassing
 User Experience (UX) and client-server communication.
 
 Not only is it true that "_password entry should be obscured on user's screen_"
-but also the "_remeber me functionality should be disabled_".
+but also the "_remember me functionality should be disabled_".
 
 You can accomplish both using an input field with `type="password"`, and
 setting the `autocomplete` attribute to `off`[^1]
@@ -69,7 +69,7 @@ With a generic message you do not disclose:
     // user does not exist
   }
 
-  if record[0] != password {
+  if subtle.ConstantTimeCompare([]byte(record[0]), []byte(password)) != 1 {
     // passwords do not match
   }
 ```
@@ -77,7 +77,14 @@ With a generic message you do not disclose:
 After a successful login, the user should be informed about the last successful
 or unsuccessful access date/time so that he can detect and report suspicious
 activity. Further information regarding logging can be found in the
-[`Error Handling and Logging`][4] section of the document.
+[`Error Handling and Logging`][4] section of the document. Moreover, it is also
+recommended to use a constant time comparison function while checking passwords
+in order to prevent timing attack. The latter consists of analyzing the
+difference of time between multiple requests with different inputs. In this
+case, a standard comparison of the form `record == password` would return false
+at the first character that does not match. The closer the submitted password,
+the longer the response time. By exploiting that, an attacker could guess the
+password.
 
 ---
 
