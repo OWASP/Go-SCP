@@ -29,6 +29,7 @@ Some of the third-party libraries availilable to achieve this are:
 
 * https://github.com/kennygrant/sanitize
 * https://github.com/maxwells/sanitize
+* https://github.com/microcosm-cc/bluemonday
 
 ## Remove line breaks, tabs and extra white space
 
