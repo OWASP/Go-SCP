@@ -23,7 +23,7 @@ software.
   does.
 
   ```go
-  // Cat (commmand) a file example
+  // Cat (command) a file example
   // set FS permissions to a given (by the user) file
   func main() {
       reader := bufio.NewReader(os.Stdin)
@@ -35,7 +35,7 @@ software.
       }
       fmt.Print("Executed command -> ")
       fmt.Println(file)
-      fmt.Println("Command successfull.")
+      fmt.Println("Command successful.")
   }
   ```
 
