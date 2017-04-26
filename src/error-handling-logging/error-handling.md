@@ -23,7 +23,7 @@ Example:
 if f < 0 {
     return 0, errors.New("math: square root of negative number")
 }
-//If an error has occured print it
+//If an error has occurred print it
 if err != nil {
     fmt.Println(err)
 }
