@@ -104,6 +104,25 @@ $ npm run serve
 
 The shell output will include a `localhost` URL where you can preview the book.
 
+You can also locally build the gook into three different formats:
+
+* **PDF**: `npm run build-pdf`
+* **ePub**: `npm run build-epub`
+* **MOBI**: `npm run build-mobi`
+
+If you're working on a specific language, you can do the same things, providing
+the language code as follows:
+
+```
+$ npm run serve go-webapp-scp:lang pt
+```
+
+To locally build the book in a specific language:
+
+* **PDF**: `npm run build-pdf go-webapp-scp:lang pt¬`
+* **ePub**: `npm run build-epub go-webapp-scp:lang pt¬`
+* **MOBI**: `npm run build-mobi go-webapp-scp:lang pt¬`
+
 [1]: https://git-scm.com
 [2]: https://www.gogs.io
 [3]: https://github.com/petervanderdoes/gitflow-avh

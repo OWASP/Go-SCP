@@ -7,12 +7,15 @@
   "devDependencies": {
     "gitbook-cli": "^2.3.0"
   },
+  "config": {
+    "lang": "en"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "node_modules/.bin/gitbook serve",
-    "build-pdf": "node_modules/.bin/gitbook pdf ./ ./build/go-webapp-scp.pdf",
-    "build-epub": "node_modules/.bin/gitbook epub ./ ./build/go-webapp-scp.epub",
-    "build-mobi": "node_modules/.bin/gitbook mobi ./ ./build/go-webapp-scp.mobi",
+    "serve": "gitbook serve src/$npm_package_config_lang _book/$npm_package_config_lang",
+    "build-pdf": "gitbook pdf src/$npm_package_config_lang ./build/$npm_package_name-$npm_package_config_lang.pdf",
+    "build-epub": "gitbook epub src/$npm_package_config_lang ./build/$npm_package_name-$npm_package_config_lang.epub",
+    "build-mobi": "gitbook mobi src/$npm_package_config_lang ./build/$npm_package_name-$npm_package_config_lang.mobi",
     "build": "npm run build-pdf; npm run build-epub; npm run build-mobi"
   },
   "keywords": [
