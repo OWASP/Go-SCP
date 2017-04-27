@@ -110,18 +110,17 @@ You can also locally build the gook into three different formats:
 * **ePub**: `npm run build-epub`
 * **MOBI**: `npm run build-mobi`
 
-If you're working on a specific language, you can do the same things, providing
-the language code as follows:
+If you're working on a specific language, you can do the same things, changing
+`lang` configuration as below:
 
 ```
-$ npm run serve go-webapp-scp:lang pt
+$ npm config set go-webapp-scp:lang pt
+
 ```
 
-To locally build the book in a specific language:
-
-* **PDF**: `npm run build-pdf go-webapp-scp:lang pt¬`
-* **ePub**: `npm run build-epub go-webapp-scp:lang pt¬`
-* **MOBI**: `npm run build-mobi go-webapp-scp:lang pt¬`
+Then every command will run upon selected language sources e.g.
+`npm run build-pdf` will build the Portuguese version of the book in `PDF`
+format.
 
 [1]: https://git-scm.com
 [2]: https://www.gogs.io
