@@ -65,11 +65,10 @@ With a generic message you do not disclose:
 
 ```go
   var value string
-  record, err = db.Query("SELECT password FROM accounts WHERE username = ?", username)
-  if err == nil {
-      value = record[0]
-  }
+  err := db.Query("SELECT password FROM accounts WHERE username = ?", username).Scan(&value)
 
+  // we don't really care about `err` as a measure to prevent timing attacks:
+  // we always do a Constant Time Comparison
   if subtle.ConstantTimeCompare([]byte(value), []byte(password)) != 1 {
     // passwords do not match
   }
