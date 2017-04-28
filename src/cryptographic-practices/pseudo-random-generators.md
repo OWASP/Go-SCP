@@ -8,7 +8,7 @@ number generator when these random values are intended to be un-guessable_", so
 let's talk about "random numbers".
 
 Cryptography relies on some randomness, but for the sake of correctness what
-most programming languages provide out-of-the-box is a **pseudo**-random number
+most programming languages provide out-of-the-box is a pseudo-random number
 generator: [Go's math/rand][1] is not an exception.
 
 You should carefully read the documentation when it states that "_Top-level
@@ -41,8 +41,11 @@ Random Number:  1825
 Random Number:  1825
 ```
 
-Because [Go's math/rand][1] is just a **pseudo**-random number generator like
-many others and they use a source.
+Because [Go's math/rand][1] is a deterministic pseudo-random number generator like
+many others they use a source, called a Seed. This Seed is responsible for changing
+the randomness of the deterministic pseudo-random number generator -- if it is known
+or predictable, the same will happen to generated number sequence.
+
 We could "fix" this example quite easily by using the [math/rand Seed function][3]
 getting the expected five different values for each program execution, but
 because we're on Cryptographic Practices section we should follow to
@@ -66,7 +69,9 @@ func main() {
 ```
 
 You may notice that running [crypto/rand][4] is slower than [math/rand][1] but
-this is expected: not always is the fastest algorithm the safest.
+this is expected: the fastest algorithm isn't always the safest. Another example
+of this, is the fact that you *CANNOT* seed crypto/rand, the library uses OS-randomness
+for this, preventing developer misuse.
 
 ```bash
 $ for i in {1..5}; do go run rand-safe.go; done

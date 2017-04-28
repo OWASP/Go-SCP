@@ -15,10 +15,11 @@ hash := F(data)
 The hash has fixed length and its value vary widely with small variations in
 input (collisions may still happen). A good hashing algorithm won't allow to
 turn a hash into its original source[^1]. MD5 is the most popular hashing
-algorithm but securitywise SHA-256 is considered the strongest.
+algorithm but securitywise BLAKE2 is considered the strongest and most flexible.
+However, BLAKE2 has no official implementation in Go yet, so we fallback to SHA-256.
 Whenever you have something that you don't need to know what it is but only if
-it is what it is supposed to be (like users' passwords), you should use
-hashing[^2]
+it is what it is supposed to be (like checking file integrity after download), 
+you should use hashing[^2]
 
 ```go
 package main
@@ -62,9 +63,20 @@ Encryption should be used whenever you need to communicate or store sensitive
 data, which you or someone else needs to access later on for further
 processing. A "simple" encryption use case is the HTTPS - Hyper Text Transfer
 Protocol Secure.
-AES is the _de facto_ standard when it comes to symmetric key encryption. On
-the other hand, you have Public key cryptography or asymmetric cryptography
-which makes use of pairs of keys: public and private
+AES is the _de facto_ standard when it comes to symmetric key encryption. This
+algorithm, as many other symmetric ciphers, can be implemented in different modes.
+You'll notice in the code sample below, GCM (Galois Counter Mode) was used, instead
+of the more popular (in cryptography code examples, at least) CBC/ECB.
+The main difference between GCM and CBC/ECB is the fact that the former is an
+**authenticated** cipher mode, meaning that after the encryption stage, an
+authentication tag is added to the ciphertext, which will then be validated **prior**
+to message decryption, ensuring the message has not been tampered with.
+On the other hand, you have Public key cryptography or asymmetric cryptography
+which makes use of pairs of keys: public and private. Public key cryptography
+is less performant as symmetric key cryptography for most cases, so its most 
+common use-case is sharing a symmetric key between two parties using
+assymetric cryptography, so they can then use the symmetric key to exchange 
+messages encrypted with symmetric cryptography.
 
 ```go
 package main
@@ -118,6 +130,9 @@ hardcoded in the source code (as it is on this example).
 
 [Go's crypto package][1] collects common cryptographic constants, but
 implementations have their own packages, as the [crypto/md5][2] one.
+
+Most modern cryptographic algorthims have been implemented under https://godoc.org/golang.org/x/crypto, so
+developers should focus on those instead of the implementations in the [crypto/*] package..
 
 ---
 
