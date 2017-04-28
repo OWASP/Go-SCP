@@ -77,6 +77,19 @@ is less performant as symmetric key cryptography for most cases, so its most
 common use-case is sharing a symmetric key between two parties using
 assymetric cryptography, so they can then use the symmetric key to exchange 
 messages encrypted with symmetric cryptography.
+Aside from AES, which is 90's technology, Go authors have begun to implement and
+support more modern symmetric encryption algorthims which also provide authentication,
+such as chacha20poly1305.
+
+Another interesting package in Go is x/crypto/nacl. This is a reference to
+Dr. Daniel J. Bernstein's NaCl library, which is a very popular modern cryptography library.
+The nacl/box and nacl/secretbox in Go are implementations of NaCl's abstractions for sending
+encrypted messages for the two most common use-cases:
+- Sending authenticated, encrypted messages between two parties using public key cryptography (nacl/box)
+- Sending authenticated, encrytped messages between two parties using symmetric (a.k.a secret-key) cryptography
+
+It is very advisable to use one of these abstractions instead of direct use of AES, if they fit your
+situation.
 
 ```go
 package main
