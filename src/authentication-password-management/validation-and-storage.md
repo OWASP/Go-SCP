@@ -52,11 +52,12 @@ How can we avoid this?
 
 The point is: if two different users provide the same password `p1` we should
 store a different hashed value.
-It may sound impossible but the answer is `salt`: a pseudo-random **unique** value which is
-append to `p1` so that the resulting hash is computed as follow: `H(p1 + salt)`.
+It may sound impossible but the answer is `salt`: a pseudo-random **unique per user password** 
+value which is appended to `p1` so that the resulting hash is computed as follows:
+`H(p1 + salt)`.
 
 So each entry on passwords store should keep the resulting hash and the `salt`
-itself in plaintext: `salt` does not offer any security concerns.
+itself in plaintext: `salt` is not required to remain private.
 
 Last recommendations.
 * Avoid using deprecated hashing algorithms (e.g. SHA-1, MD5, etc)
@@ -118,11 +119,11 @@ here only to illustrate the theory with a practical example. The next section
 explains how to correctly salt passwords in real life.
 
 
-Storing password securely: in practice
+Storing password securely: the practice
 ---------------------------------------
 
 One of the most important adage in cryptography is: **never roll your own
-crypto**. By not doing so, one can put at risk the entire application. It is a
+crypto**. By doing so, one can put at risk the entire application. It is a
 sensitive and complex topic. Hopefully, cryptography provides tools and
 standards reviewed and approved by experts. It is therefore important to use
 them instead of trying to re-invent the wheel.
