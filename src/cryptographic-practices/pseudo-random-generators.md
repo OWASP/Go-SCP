@@ -69,9 +69,9 @@ func main() {
 ```
 
 You may notice that running [crypto/rand][4] is slower than [math/rand][1] but
-this is expected: the fastest algorithm isn't always the safest. Another example
-of this, is the fact that you *CANNOT* seed crypto/rand, the library uses OS-randomness
-for this, preventing developer misuse.
+this is expected: the fastest algorithm isn't always the safest. Crypto's rand is
+also safer to implement; an example of this, is the fact that you *CANNOT* seed 
+crypto/rand, the library uses OS-randomness for this, preventing developer misuse.
 
 ```bash
 $ for i in {1..5}; do go run rand-safe.go; done
