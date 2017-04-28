@@ -42,7 +42,7 @@ Random Number:  1825
 ```
 
 Because [Go's math/rand][1] is a deterministic pseudo-random number generator like
-many others they use a source, called a Seed. This Seed is responsible for changing
+many others they use a source, called a Seed. This Seed is **solely** responsible for
 the randomness of the deterministic pseudo-random number generator -- if it is known
 or predictable, the same will happen to generated number sequence.
 
