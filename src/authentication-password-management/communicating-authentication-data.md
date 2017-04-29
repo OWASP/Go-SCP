@@ -64,12 +64,12 @@ With a generic message you do not disclose:
 * How your system works: "Invalid password" reveals how your application works
 
 ```go
-  record, err = db.Query("SELECT password FROM accounts WHERE username = ?", username)
+  record, err = db.Query("SELECT passwordHash FROM accounts WHERE username = ?", username)
   if err != nil {
     // user does not exist
   }
 
-  if subtle.ConstantTimeCompare([]byte(record[0]), []byte(password)) != 1 {
+  if subtle.ConstantTimeCompare([]byte(record[0]), []byte(attemptPasswordHash)) != 1 {
     // passwords do not match
   }
 ```
