@@ -36,7 +36,8 @@ different from `H(p2)`[^1].
 Does this sound, or look, like Math?
 Pay attention to this last requirement: `H` should be such a function that
 there's no function `H⁻¹` so that `H⁻¹(H(p1))` is equal to `p1`. This means
-that there's no way back to the original `p1`.
+that there's no way back to the original `p1`, unless you try all possible
+values of `p`.
 
 If `H` is one-way only, what's the real problem about account leakage?
 
@@ -51,18 +52,18 @@ How can we avoid this?
 
 The point is: if two different users provide the same password `p1` we should
 store a different hashed value.
-It may sound impossible but the answer is `salt`: a pseudo-random value which is
-append to `p1` so that the resulting hash is computed as follow: `H(p1 + salt)`.
+It may sound impossible but the answer is `salt`: a pseudo-random **unique per
+user password** value which is appended to `p1` so that the resulting hash is
+computed as follows: `H(p1 + salt)`.
 
 So each entry on passwords store should keep the resulting hash and the `salt`
-itself in plaintext: `salt` does not offer any security concerns.
+itself in plaintext: `salt` is not required to remain private.
 
 Last recommendations.
-* Avoid using MD5 hashing algorithm whenever possible;
-* Avoid using SHA1 as it has been cracked recently.
+* Avoid using deprecated hashing algorithms (e.g. SHA-1, MD5, etc)
 * Read the [Pseudo-Random Generators section][1].
 
-The following example shows a basic example of how this works:
+The following code-sample shows a basic example of how this works:
 
 ```go
 package main
@@ -121,8 +122,8 @@ explains how to correctly salt passwords in real life.
 Storing password securely: the practice
 ---------------------------------------
 
-One of the most important adage in cryptography is: **never write your own
-crypto**. By not doing so, one can put at risk the entire application. It is a
+One of the most important adage in cryptography is: **never roll your own
+crypto**. By doing so, one can put at risk the entire application. It is a
 sensitive and complex topic. Hopefully, cryptography provides tools and
 standards reviewed and approved by experts. It is therefore important to use
 them instead of trying to re-invent the wheel.
@@ -130,7 +131,7 @@ them instead of trying to re-invent the wheel.
 In the case of password storage, the hashing algorithms recommended by
 [OWASP][2] are [`bcrypt`][2], [`PDKDF2`][3], [`Argon2`][4] and [`scrypt`][5].
 Those take care of hashing and salting passwords in a robust way. Go authors
-provides an extended package for cryptography, that is not part of the standard
+provide an extended package for cryptography, that is not part of the standard
 library. It provides robust implementations for most of the aforementioned
 algorithms. It can be downloaded using  `go get`:
 

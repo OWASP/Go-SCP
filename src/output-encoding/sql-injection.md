@@ -37,15 +37,21 @@ query := "SELECT number, expireDate, cvv FROM creditcards WHERE customerId = ?"
 
 stmt, _ := db.Query(query, customerId)
 ```
-Notice the placeholder[^1] `?` and how your query is:
+Notice the placeholder `?` and how your query is:
 
  * readable,
  * shorter and
  * SAFE
 
-Check Database Security section in this guide to get more in-depth information about this topic.
+Placeholder syntax in prepared statements is database-specific.
+For example, comparing MySQL, PostgreSQL, and Oracle:
 
----
-[^1] The placeholder syntax in prepared statements is database-specific.
+| MySQL | PostgreSQL | Oracle |
+| :---: | :--------: | :----: |
+| WHERE col = ? | WHERE col = $1 | WHERE col = :col |
+| VALUES(?, ?, ?) | VALUES($1, $2, $3) | VALUES(:val1, :val2, :val3) |
+
+Check Database Security section in this guide to get more in-depth information
+about this topic.
 
 [1]: https://golang.org/pkg/database/sql/#DB.Prepare
