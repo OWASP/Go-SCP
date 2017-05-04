@@ -73,7 +73,7 @@ authentication tag is added to the ciphertext, which will then be validated **pr
 to message decryption, ensuring the message has not been tampered with.
 On the other hand, you have Public key cryptography or asymmetric cryptography
 which makes use of pairs of keys: public and private. Public key cryptography
-is less performant as symmetric key cryptography for most cases, so its most 
+is less performant than symmetric key cryptography for most cases, so its most 
 common use-case is sharing a symmetric key between two parties using
 assymetric cryptography, so they can then use the symmetric key to exchange 
 messages encrypted with symmetric cryptography.
