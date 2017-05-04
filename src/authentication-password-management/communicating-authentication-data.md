@@ -84,7 +84,8 @@ difference of time between multiple requests with different inputs. In this
 case, a standard comparison of the form `record == password` would return false
 at the first character that does not match. The closer the submitted password,
 the longer the response time. By exploiting that, an attacker could guess the
-password.
+password. Note that even if the record doesn't exist, we always force the execution of
+`subtle.ConstantTimeCompare` with an empty value to compare to the user input.
 
 ---
 
