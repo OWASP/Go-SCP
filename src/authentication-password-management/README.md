@@ -37,4 +37,3 @@ encrypted and stored in a protected location on a trusted system (e.g., the
 server). The source code is NOT a secure location_".
 
 [1]: https://www.owasp.org/index.php/OWASP_Secure_Coding_Practices_-_Quick_Reference_Guide
-
