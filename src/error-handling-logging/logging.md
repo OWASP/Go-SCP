@@ -37,12 +37,12 @@ func main() {
 
     switch RoleLevel {
     case 1:
-        // Log successfull login
+        // Log successful login
         logger.Printf("Login successfull.")
         fmt.Print(&buf)
     case 2:
-        // Log unsuccessfull Login
-        logger.Printf("Login unsuccessfull - Insufficient access level.")
+        // Log unsuccessful Login
+        logger.Printf("Login unsuccessful - Insufficient access level.")
         fmt.Print(&buf)
      default:
         // Unspecified error
