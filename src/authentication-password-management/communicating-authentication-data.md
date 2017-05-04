@@ -64,12 +64,12 @@ With a generic message you do not disclose:
 * How your system works: "Invalid password" reveals how your application works
 
 ```go
-  var value string
-  err := db.Query("SELECT password FROM accounts WHERE username = ?", username).Scan(&value)
+  record, err = db.Query("SELECT password FROM accounts WHERE username = ?", username)
+  if err != nil {
+    // user does not exist
+  }
 
-  // we don't really care about `err` as a measure to prevent timing attacks:
-  // we always do a Constant Time Comparison
-  if subtle.ConstantTimeCompare([]byte(value), []byte(password)) != 1 {
+  if subtle.ConstantTimeCompare([]byte(record[0]), []byte(password)) != 1 {
     // passwords do not match
   }
 ```
@@ -84,8 +84,7 @@ difference of time between multiple requests with different inputs. In this
 case, a standard comparison of the form `record == password` would return false
 at the first character that does not match. The closer the submitted password,
 the longer the response time. By exploiting that, an attacker could guess the
-password. Note that even if the record doesn't exist, we always force the execution of
-`subtle.ConstantTimeCompare` with an empty value to compare to the user input.
+password.
 
 ---
 
