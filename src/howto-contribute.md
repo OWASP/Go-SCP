@@ -105,7 +105,7 @@ $ npm run serve
 The shell output will include a `localhost` URL where you can preview the book.
 
 [1]: https://git-scm.com
-[2]: https://www.gogs.io
+[2]: https://gogs.io
 [3]: https://github.com/petervanderdoes/gitflow-avh
 [4]: http://nvie.com/posts/a-successful-git-branching-model
 [5]: https://github.com/jaspernbrouwer/git-flow-hooks
