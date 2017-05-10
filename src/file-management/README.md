@@ -5,7 +5,7 @@ The first precaution to take when handling files is to make sure the users are
 not allowed to directly supply data to any dynamic functions. In languages like
 PHP, passing user data to dynamic include functions is a serious security risk.
 Go is a compiled language which means there are no `include` functions,
-and libraries cannot be loaded dynamically.
+and libraries aren't usually loaded dynamically[^1].
 
 File uploads should only be restricted to authenticated users.
 After guaranteeing that file uploads are only made by authenticated users,
@@ -74,3 +74,7 @@ Never send the absolute file path to the user, always use relative paths.
 
 Set the server permissions regarding the application files and resources to
 `read-only`, and when a file is uploaded, scan the file for viruses and malware.
+
+[^1]:  Go 1.8 does allow dynamic loading now, via [the new plugin mechanism]( https://golang.org/pkg/plugin/).
+       If your application uses this mechanism, you should take precautions
+       against user-supplied input.
