@@ -17,7 +17,7 @@ You may know that connections (in general file descriptors) are finite so we
 should guarantee that we do not loose none of them due to a network hang or
 application crash.
 
-The first database connection will be openned only when first required and
+The first database connection will be opened only when first required and
 `sql.Open` even won't test database connectivity: wrong database credentials
 will trigger an error when first database operation runs.
 
