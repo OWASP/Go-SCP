@@ -1,10 +1,36 @@
 Database Connections
 ====================
 
-## Keep it closed!
+## The concept
 
-One thing most developers forget is to close the database connection. Let's look
-at this example:
+`sql.Open` does not return a database connection but a handle for database:
+_something_ you have available to access database features.
+Concerning to connections instead of a single connection, `database/sql`
+package manages a pool of connections, what means you have multiple and
+concurrent database connections: when you need to perform a database operation,
+such as a query, the package takes an available connection from the pool which
+should return to the pool as soon as you're "done".
+"Done" not always means that your database query was successfully. "done" also
+means that the maximum amount of time to complete the operation was exhausted.
+
+You may know that connections (in general file descriptors) are finite so we
+should guarantee that we do not loose none of them due to a network hang or
+application crash.
+
+The first database connection will be openned only when first required and
+`sql.Open` even won't test database connectivity: wrong database credentials
+will trigger an error when first database operation runs.
+
+Looking for a _rule of thumb_ a [Context][3] should be always provided and the
+context variant of `database/sql` interface (i.e. `QueryContext()` instead of
+`Query()`) should be used.
+
+From the official Go documentation "_Package context defines the Context type,
+which carries deadlines, cancelation signals, and other request-scoped values
+across API boundaries and between processes._".
+At a database level when the context is canceled, a transaction will be rolled
+back if not committed, a Rows (from QueryContext) will be closed and any
+resources will be returned.
 
 ```go
 package main
@@ -23,18 +49,6 @@ func main() {
     fmt.Println("Connected to:", version)
 }
 ```
-
-As you can see after the opening of the connection, Go shuts down with
-[db.Close()][1]. In this case, we used the driver for MariaDB.
-Note that the `db.Close()` is inside a `defer` statement. In Go this allows
-us to guarantee that the connection is closed.
-More information on defer in the [Error Handling and Logging][2] section.
-
-You may ask - *why should I close it?*
-
-After closing the SQL connection, it will be returned to the pool. Furthermore,
-since the connections are limited and take resources, if you use the same
-connection string, it's possible to reuse it from the pool.
 
 ## Connection string protection
 
@@ -82,3 +96,4 @@ the data.
 
 [1]: https://golang.org/pkg/database/sql/#DB.Close
 [2]: ../error-handling-logging/README.md
+[3]: https://golang.org/pkg/context/
