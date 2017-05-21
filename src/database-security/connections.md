@@ -10,14 +10,16 @@ at this example:
 package main
 
 import "fmt"
+import "context"
 import "database/sql"
 import "github.com/go-sql-driver/mysql"
 
 func main() {
+    ctx := context.Background()
     db, _ := sql.Open("mysql", "user:@/cxdb")
     defer db.Close()
 
-    var version string db.QueryRow("SELECT VERSION()").Scan(&version)
+    var version string db.QueryRowContext(ctx, "SELECT VERSION()").Scan(&version)
     fmt.Println("Connected to:", version)
 }
 ```
