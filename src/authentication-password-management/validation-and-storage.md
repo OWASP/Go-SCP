@@ -72,6 +72,7 @@ import (
     "crypto/rand"
     "crypto/sha256"
     "database/sql"
+    "context"
     "fmt"
     "io"
 )
@@ -79,6 +80,7 @@ import (
 const saltSize = 32
 
 func main() {
+    ctx := context.Background()
     email := []byte("john.doe@somedomain.com")
     password := []byte("47;u5:B(95m72;Xq")
 
@@ -102,11 +104,11 @@ func main() {
     // fmt.Printf("hash    : %x\n", hash.Sum(nil))
 
     // you're supposed to have a database connection
-    stmt, err := db.Prepare("INSERT INTO accounts SET hash=?,salt=?,email=?")
+    stmt, err := db.PrepareContext(ctx, "INSERT INTO accounts SET hash=?, salt=?, email=?")
     if err != nil {
         panic(err)
     }
-    result, err := stmt.Exec(email, h, salt)
+    result, err := stmt.ExecContext(ctx, email, h, salt)
     if err != nil {
         panic(err)
     }
@@ -148,12 +150,14 @@ package main
 
 import (
     "database/sql"
+    "context"
     "fmt"
 
     "golang.org/x/crypto/bcrypt"
 )
 
 func main() {
+    ctx := context.Background()
     email := []byte("john.doe@somedomain.com")
     password := []byte("47;u5:B(95m72;Xq")
 
@@ -170,11 +174,11 @@ func main() {
     // fmt.Printf("hashed password: %x\n", hashedPassword)
 
     // you're supposed to have a database connection
-    stmt, err := db.Prepare("INSERT INTO accounts SET hash=?, email=?")
+    stmt, err := db.PrepareContext(ctx, "INSERT INTO accounts SET hash=?, email=?")
     if err != nil {
         panic(err)
     }
-    result, err := stmt.Exec(hashedPassword, email)
+    result, err := stmt.ExecContext(ctx, hashedPassword, email)
     if err != nil {
         panic(err)
     }
@@ -185,12 +189,14 @@ Bcrypt also provides a simple and secure way to compare a plaintext password
 with an already hashed password:
 
  ```go
+ ctx := context.Background()
+
  // credentials to validate
  email := []byte("john.doe@somedomain.com")
  password := []byte("47;u5:B(95m72;Xq")
 
 // fetch the hashed password corresponding to the provided email
-record := db.QueryRow("SELECT hash FROM accounts WHERE email = ? LIMIT 1", email)
+record := db.QueryRowContext(ctx, "SELECT hash FROM accounts WHERE email = ? LIMIT 1", email)
 
 var expectedPassword string
 if err := record.Scan(&expectedPassword); err != nil {

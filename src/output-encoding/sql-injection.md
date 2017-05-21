@@ -11,10 +11,11 @@ is simply added to a (partial) SQL query, you're vulnerable to SQL Injection.
 Imagine you have a query such as the one below:
 
 ```go
+ctx := context.Background()
 customerId := r.URL.Query().Get("id")
 query := "SELECT number, expireDate, cvv FROM creditcards WHERE customerId = " + customerId
 
-row, _ := db.Query(query)
+row, _ := db.QueryContext(ctx, query)
 ```
 You’re about to ruin your life.
 
@@ -32,10 +33,11 @@ SELECT number, expireDate, cvv FROM creditcards WHERE customerId = 1 OR 1=1
 There's only one way to keep your database safe: [Prepared Statements][1].
 
 ```go
+ctx := context.Background()
 customerId := r.URL.Query().Get("id")
 query := "SELECT number, expireDate, cvv FROM creditcards WHERE customerId = ?"
 
-stmt, _ := db.Query(query, customerId)
+stmt, _ := db.QueryContext(ctx, query, customerId)
 ```
 Notice the placeholder `?` and how your query is:
 
