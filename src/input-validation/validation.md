@@ -89,18 +89,6 @@ Third-party packages exist that handle security in Go:
 * [Validator][8] - Go `Struct` and `Field` validation, including `Cross Field`,
   `Cross Struct`, `Map` as well as `Slice` and `Array` diving.
 
-## Redirects
-
-Go handles redirections internally which means that unless specified in the
-server side, in case of a redirect, Go serves the target page of the redirect
-directly.
-This can lead to security issues if a bad agent submits malicious data directly
-to the target of the redirection, effectively bypassing the data validation
-procedures in the server.
-
-As such, developers must take special care in validating data from redirects
-and assure that the provided data is valid and as expected.
-
 ## File Manipulation
 
 Any time file usage is required ( `read` or `write` a file ), validation checks
