@@ -3,27 +3,19 @@ Database Connections
 
 ## The concept
 
-`sql.Open` does not return a database connection but a handle for database:
-_something_ you have available to access database features.
-Concerning to connections instead of a single connection, `database/sql`
-package manages a pool of connections, what means you have multiple and
-concurrent database connections: when you need to perform a database operation,
-such as a query, the package takes an available connection from the pool which
-should return to the pool as soon as you're "done".
-"Done" not always means that your database query was successfully. "done" also
-means that the maximum amount of time to complete the operation was exhausted.
+`sql.Open` does not return a database connection but `*DB`: a database
+connection pool. When a database operation is about to run (e.g. query) an
+available connection is taken from the pool, which should be returned to the
+pool as soon as the operation completes.
 
-You may know that connections (in general file descriptors) are finite so we
-should guarantee that we do not loose none of them due to a network hang or
-application crash.
+Remind that a database connection will be opened only when first required to
+perform a database operation such as a query.
+`sql.Open` doesn't even test database connectivity: wrong database credentials
+will trigger an error at the first database operation execution time.
 
-The first database connection will be opened only when first required and
-`sql.Open` even won't test database connectivity: wrong database credentials
-will trigger an error when first database operation runs.
-
-Looking for a _rule of thumb_ a [Context][3] should be always provided and the
-context variant of `database/sql` interface (i.e. `QueryContext()` instead of
-`Query()`) should be used.
+Looking for a _rule of thumb_, the context variant of `database/sql` interface
+(e.g. `QueryContext()`) should always be used and provided with the appropriate
+[Context][3].
 
 From the official Go documentation "_Package context defines the Context type,
 which carries deadlines, cancelation signals, and other request-scoped values
@@ -35,17 +27,56 @@ resources will be returned.
 ```go
 package main
 
-import "fmt"
-import "context"
-import "database/sql"
-import "github.com/go-sql-driver/mysql"
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "log"
+    "time"
+
+    _ "github.com/go-sql-driver/mysql"
+)
+
+type program struct {
+    base context.Context
+    cancel func()
+    db *sql.DB
+}
 
 func main() {
-    ctx := context.Background()
-    db, _ := sql.Open("mysql", "user:@/cxdb")
-    defer db.Close()
+    db, err := sql.Open("mysql", "user:@/cxdb")
+    if err != nil {
+        log.Fatal(err)
+    }
+    p := &program{db: db}
+    p.base, p.cancel = context.WithCancel(context.Background())
 
-    var version string db.QueryRowContext(ctx, "SELECT VERSION()").Scan(&version)
+    // Wait for program termination request, cancel base context on request.
+    go func() {
+        osSignal := // ...
+        select {
+        case <-p.base.Done():
+        case <-osSignal:
+            p.cancel()
+        }
+        // Optionally wait for N milliseconds before calling os.Exit.
+    }()
+
+    err =  p.doOperation()
+    if err != nil {
+        log.Fatal(err)
+    }
+}
+
+func (p *program) doOperation() error {
+    ctx, cancel := context.WithTimeout(p.base, 10 * time.Second)
+    defer cancel()
+
+    var version string
+    err := p.db.QueryRowContext(ctx, "SELECT VERSION();").Scan(&version)
+    if err != nil {
+        return fmt.Errorf("unable to read version %v", err)
+    }
     fmt.Println("Connected to:", version)
 }
 ```
