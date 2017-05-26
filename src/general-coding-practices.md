@@ -90,7 +90,63 @@ software.
   This is an old problem, quite common in concurrent environments.
   The solution is also often enough not taken into account.
 
-  To avoid race conditions, you should use "semaphores":
+  The best approach to this is to use Mutexes which are available in Go's
+  `sync` package. A simple example taken from the "Go Tour":
+
+  ```go
+  package main
+
+  import (
+  	"fmt"
+  	"sync"
+  	"time"
+  )
+
+  // SafeCounter is safe to use concurrently.
+  type SafeCounter struct {
+  	v   map[string]int
+  	mux sync.Mutex
+  }
+
+  // Inc increments the counter for the given key.
+  func (c *SafeCounter) Inc(key string) {
+  	c.mux.Lock()
+  	// Lock so only one goroutine at a time can access the map c.v.
+  	c.v[key]++
+  	c.mux.Unlock()
+  }
+
+  // Value returns the current value of the counter for the given key.
+  func (c *SafeCounter) Value(key string) int {
+  	c.mux.Lock()
+  	// Lock so only one goroutine at a time can access the map c.v.
+  	defer c.mux.Unlock()
+  	return c.v[key]
+  }
+
+  func main() {
+  	c := SafeCounter{v: make(map[string]int)}
+  	for i := 0; i < 1000; i++ {
+  		go c.Inc("somekey")
+  	}
+
+  	time.Sleep(time.Second)
+  	fmt.Println(c.Value("somekey"))
+  }
+  ```
+
+  Another problem is resource exhaustion, which can lead to Denial of Service.  
+  Although there is no native support for semaphores in Go, they can be recreated
+  using buffered channels.
+
+  A few examples of the usage of semaphores:
+
+      - Database connections
+      - TCP/IP output connections
+      - Threads
+      - Memory
+
+  A simple example of semaphore usage in Go:
 
   ```go
   // write to file
@@ -119,8 +175,8 @@ software.
 * "_Protect shared variables and resources from inappropriate concurrent
   access_"
 
-  By now you already know how to approach this problem; using a semaphore would
-  solve any further issues.
+  By now you already know how to approach this problem; using a mutex or a
+  semaphore would solve any further issues.
 
 * "_Explicitly initialize all your variables and other data stores, either
   during declaration or just before the first usage_"
