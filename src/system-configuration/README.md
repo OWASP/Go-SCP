@@ -48,9 +48,14 @@ First, a function was created that checks the path being requested and if it
 can be shown or not.
 
 ```go
-type justFilesFilesystem struct {
-    fs http.FileSystem
-}
+type (
+	justFilesFilesystem struct {
+		fs http.FileSystem
+	}
+	neuteredReaddirFile struct {
+		http.File
+	}
+)
 
 func (fs justFilesFilesystem) Open(name string) (http.File, error) {
     f, err := fs.fs.Open(name)
