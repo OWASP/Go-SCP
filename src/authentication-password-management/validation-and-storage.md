@@ -74,7 +74,6 @@ import (
     "database/sql"
     "context"
     "fmt"
-    "io"
 )
 
 const saltSize = 32
@@ -86,7 +85,7 @@ func main() {
 
     // create random word
     salt := make([]byte, saltSize)
-    _, err := io.ReadFull(rand.Reader, salt)
+    _, err := rand.Read(salt)
     if err != nil {
         panic(err)
     }
