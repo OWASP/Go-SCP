@@ -68,7 +68,7 @@ With a generic message you do not disclose:
   var value string
 
   ctx := context.Background()
-  err := db.QueryContext(ctx, "SELECT passwordHash FROM accounts WHERE username = ?", username).Scan(&value)
+  err := db.QueryRowContext(ctx, "SELECT passwordHash FROM accounts WHERE username = ?", username).Scan(&value)
 
   // we don't really care about `err` as a measure to prevent timing attacks:
   // as we always do a Constant Time Compare
