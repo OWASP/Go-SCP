@@ -103,6 +103,7 @@ AES, if they fit your use-case.
 package main
 
 import "fmt"
+import "io"
 import "crypto/aes"
 import "crypto/cipher"
 import "crypto/rand"
@@ -117,7 +118,7 @@ func main() {
         }
 
         nonce := make([]byte, 12)
-        if _, err := rand.Read(nonce); err != nil {
+        if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
                 panic(err.Error())
         }
 
