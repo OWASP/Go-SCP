@@ -34,7 +34,7 @@ or follow us on Twitter: [@checkmarx][7]
 
 ## About OWASP Secure Coding Practices
 
-The [Secure Coding Practices Quick Reference Guide][3] is an [OWASP][4] - Open
+This book was adapted for Go Language from The [Secure Coding Practices Quick Reference Guide][3], an [OWASP][4] - Open
 Web Application Security Project. It is a "_technology agnostic set of
 general software security coding practices, in a comprehensive checklist
 format, that can be integrated into the development lifecycle_" ([source][3]).
