@@ -54,7 +54,7 @@ If you're curious about how we built it from scratch, read the
 
 This document is released under the Creative Commons Attribution-ShareAlike 4.0 International license (CC BY-SA 4.0). For any reuse or
 distribution, you must make clear to others the license terms of this work.
-[http://creativecommons.org/licenses/by-sa/3.0/][1vf]
+[https://creativecommons.org/licenses/by-sa/4.0/][11]
 
 
 
