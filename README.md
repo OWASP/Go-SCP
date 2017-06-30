@@ -50,6 +50,14 @@ This book was created using a few open source tools.
 If you're curious about how we built it from scratch, read the
 [How To contribute section][6].
 
+## License
+
+This document is released under the Creative Commons Attribution-ShareAlike 4.0 International license (CC BY-SA 4.0). For any reuse or
+distribution, you must make clear to others the license terms of this work.
+[http://creativecommons.org/licenses/by-sa/3.0/][1vf]
+
+
+
 [1]: https://golang.org
 [2]: https://www.checkmarx.com
 [3]: https://www.owasp.org/index.php/OWASP_Secure_Coding_Practices_-_Quick_Reference_Guide
@@ -60,3 +68,4 @@ If you're curious about how we built it from scratch, read the
 [8]: https://www.gitbook.com/
 [9]: https://checkmarx.gitbooks.io/go-scp/
 [10]: https://www.gitbook.com/book/checkmarx/go-scp/
+[11]: https://creativecommons.org/licenses/by-sa/4.0/
