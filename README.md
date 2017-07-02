@@ -22,14 +22,14 @@ what kind of security problems could arise during development.
 
 ## About Checkmarx
 
-Checkmarx is an Application Security software company, whose mission is to
+[Checkmarx][2] is an Application Security software company, whose mission is to
 provide enterprise organizations with application security testing products
 and services that empower developers to deliver secure applications. Amongst
 the company's 1,000 customers are five of the world's top 10 software vendors,
 four of the top American banks, and many Fortune 500 and government
 organizations, including SAP, Samsung and Salesforce.com.
 
-For more information about Checkmarx, visit [http://www.checkmarx.com][2]
+For more information about Checkmarx, visit [checkmarx.com][2]
 or follow us on Twitter: [@checkmarx][7]
 
 ## About OWASP Secure Coding Practices
@@ -59,7 +59,7 @@ distribution, you must make clear to others the license terms of this work.
 
 
 [1]: https://golang.org
-[2]: https://www.checkmarx.com
+[2]: http://chkmrx.co/2sffXFr
 [3]: https://www.owasp.org/index.php/OWASP_Secure_Coding_Practices_-_Quick_Reference_Guide
 [4]: https://www.owasp.org
 [5]: https://www.owasp.org/index.php/About_OWASP
