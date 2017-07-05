@@ -23,7 +23,7 @@ the company's 1,000 customers are five of the world's top 10 software vendors,
 four of the top American banks, and many Fortune 500 and government
 organizations, including SAP, Samsung and Salesforce.com.
 
-For more information about Checkmarx, visit [http://www.checkmarx.com][2]
+For more information about Checkmarx, visit [https://www.checkmarx.com][2]
 or follow us on Twitter: [@checkmarx][7]
 
 ## About OWASP Secure Coding Practices
