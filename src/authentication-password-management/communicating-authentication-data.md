@@ -61,21 +61,12 @@ part of the authentication data was incorrect. Instead of "Invalid username" or
 With a generic message you do not disclose:
 
 * Who is registered: "Invalid password" means that the username exists.
-* How your system works: "Invalid password" reveals how your application works
+* How your system works: "Invalid password" may reveal how your application
+  works, first querying the database for the `username` and then comparing
+  passwords in-memory
 
-```go
-  var ctx context.Context
-  var value string
-
-  ctx := context.Background()
-  err := db.QueryRowContext(ctx, "SELECT passwordHash FROM accounts WHERE username = ?", username).Scan(&value)
-
-  // we don't really care about `err` as a measure to prevent timing attacks:
-  // as we always do a Constant Time Compare
-  if subtle.ConstantTimeCompare([]byte(value), []byte(attemptPasswordHash)) != 1 {
-    // passwords do not match
-  }
-```
+An example of how to perform authentication data validation (and storage) is
+available at [Validation and Storage section][5].
 
 After a successful login, the user should be informed about the last successful
 or unsuccessful access date/time so that he can detect and report suspicious
@@ -101,3 +92,4 @@ user input.
 [2]: https://httpd.apache.org/docs/1.3/logs.html#accesslog
 [3]: http://nginx.org/en/docs/http/ngx_http_log_module.html#log_format
 [4]: ../error-handling-logging/logging.md
+[5]: ./validation-and-storage.md#storing-password-securely-the-practice

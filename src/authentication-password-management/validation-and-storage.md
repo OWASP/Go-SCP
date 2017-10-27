@@ -1,7 +1,7 @@
 Validation and Storing authentication data
 ==========================================
 
-Validation
+## Validation
 ----------
 
 The key subject of this section is the authentication data storage, as more
@@ -20,8 +20,7 @@ implementations (like Google does nowadays), validation should happen only on
 the completion of all data input, on a trusted system (e.g. the server).
 
 
-Storing password securely: the theory
--------------------------------------
+## Storing password securely: the theory
 
 Now let's talk about storing passwords.
 
@@ -120,8 +119,7 @@ here only to illustrate the theory with a practical example. The next section
 explains how to correctly salt passwords in real life.
 
 
-Storing password securely: the practice
----------------------------------------
+## Storing password securely: the practice
 
 One of the most important adage in cryptography is: **never roll your own
 crypto**. By doing so, one can put at risk the entire application. It is a
@@ -200,10 +198,17 @@ record := db.QueryRowContext(ctx, "SELECT hash FROM accounts WHERE email = ? LIM
 var expectedPassword string
 if err := record.Scan(&expectedPassword); err != nil {
     // user does not exist
+
+    // this should be logged (see Error Handling and Logging) but execution
+    // should continue
 }
 
 if bcrypt.CompareHashAndPassword(password, []byte(expectedPassword)) != nil {
     // passwords do not match
+
+    // passwords mismatch should be logged (see Error Handling and Logging)
+    // error should be returned so that a GENERIC message "Sign-in attempt has
+    // failed, please check your credentials" can be shown to the user.
 }
  ```
 
