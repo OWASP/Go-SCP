@@ -44,7 +44,7 @@ Well, if you know all possible passwords, you can pre-compute their hashes and
 then run a rainbow table attack.
 
 Certainly you were already told that passwords are hard to manage from user's
-point of view, and that users are not only able re-use passwords but they also
+point of view, and that users are not only able to re-use passwords but they also
 tend to use something easy to remember, which makes the universe really small.
 
 How can we avoid this?
