@@ -56,19 +56,29 @@ It's also good practice to implement generic error messages or custom error
 pages as a way to make sure that no information is leaked when an error
 occurs.
 
-Go's native package to handle logs doesn't support log levels, which
-means that natively to have level based logging would mean implementing
-levels by hand. Another issue with the native logger is that there is no
-way to turn logging on or off on a per-package basis.
+---
 
-Since all applications require proper logging to maintain upkeep and
-security, most of the projects use a third-party logging library like:
+[Go's log package][0], as per the documentation, "implements a **simple**
+logging" and some common and important features are missing, such as leveled
+logging (e.g. `debug`, `info`, `warn`, `error`, `fatal`, `panic`) and formatters
+support (e.g. logstash): these are two important features to make logs usable
+(e.g. for integration with a Security Information and Event Management system).
+
+Most, if not all, third-party logging packages offer these and other features.
+The ones below are some of the post popular third-party logging packages:
 
 * [Logrus][1] - https://github.com/Sirupsen/logrus
 * [glog][2]   - https://github.com/golang/glog
 * [loggo][3]  - https://github.com/juju/loggo
 
-Of these libraries, the most used is Logrus.
+An important note regarding [Go's log package][0]: both Fatal and Panic
+functions do much more than logging. Panic functions call `panic` after writing
+the log message what is not generally accepted for libraries and Fatal functions
+call `os.Exit(1)` after writing the log message what may terminate the program
+preventing deferred statements to run, buffers to be flushed and/or temporary
+data to be removed.
+
+---
 
 From the log access perspective, only authorized individuals should have
 access to the logs.
@@ -113,6 +123,7 @@ with the current log hash to verify integrity before any updates to the log.
 Full source is included in the document.
 
 
+[0]: https://golang.org/pkg/log/
 [1]: https://github.com/Sirupsen/logrus
 [2]: https://github.com/golang/glog
 [3]: https://github.com/juju/loggo

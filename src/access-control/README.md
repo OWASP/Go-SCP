@@ -32,7 +32,7 @@ In case of failure, access control should fail securely. In Go we can use
 `Defer` to achieve this.
 More details in the [Error Logging][1] section of the document.
 
-If the application cannot to access its configuration information, all
+If the application cannot access its configuration information, all
 access to the application should be denied.
 
 Authorization controls should be enforced on every request, including
