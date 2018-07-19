@@ -89,8 +89,11 @@ func main() {
 }
 ```
 
+**NOTE**: Keep in mind that `ServeMux` [doesn't change][2] the URL request path for `CONNECT` requests.
+
 Third-party packages:
 
 * [Gorilla Toolkit - MUX][1]
 
 [1]: http://www.gorillatoolkit.org/pkg/mux
+[2]: https://golang.org/pkg/net/http/#ServeMux.Handler
