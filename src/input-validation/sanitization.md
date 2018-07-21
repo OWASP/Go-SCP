@@ -89,8 +89,12 @@ func main() {
 }
 ```
 
+**NOTE**: Keep in mind that `ServeMux` [doesn't change][2] the URL request path for `CONNECT` requests, thus possibly making an application [vulnerable for path traversal attacks][3] if allowed request methods are not limited.
+
 Third-party packages:
 
 * [Gorilla Toolkit - MUX][1]
 
 [1]: http://www.gorillatoolkit.org/pkg/mux
+[2]: https://golang.org/pkg/net/http/#ServeMux.Handler
+[3]: https://ilyaglotov.com/blog/servemux-and-path-traversal
