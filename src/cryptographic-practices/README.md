@@ -15,9 +15,13 @@ hash := F(data)
 The hash has fixed length and its value vary widely with small variations in
 input (collisions may still happen). A good hashing algorithm won't allow to
 turn a hash into its original source[^1]. MD5 is the most popular hashing
-algorithm but securitywise BLAKE2 is considered the strongest and most flexible.
-However, BLAKE2 has no official implementation in Go yet, so we fallback to
-SHA-256.
+algorithm but securitywise [BLAKE2][4] is considered the strongest and most
+flexible.
+
+Go supplementary cryptography libraries offers both [BLAKE2b][5] (or just
+BLAKE2) and [BLAKE2s][6] implementations: the former is optimized for 64-bit
+platforms and the later for 8- to 32-bit platforms. If BLAKE2 is unavailable,
+SHA-256 is the right option.
 
 Whenever you have something that you don't need to know what it is but only if
 it is what it is supposed to be (like checking file integrity after download),
@@ -30,23 +34,31 @@ import "fmt"
 import "io"
 import "crypto/md5"
 import "crypto/sha256"
+import "golang.org/x/crypto/blake2s"
 
 func main () {
         h_md5 := md5.New()
         h_sha := sha256.New()
+        h_blake2s, _ := blake2s.New256(nil)
         io.WriteString(h_md5, "Welcome to Go Language Secure Coding Practices")
         io.WriteString(h_sha, "Welcome to Go Language Secure Coding Practices")
-        fmt.Printf("MD5   : %x\n", h_md5.Sum(nil))
-        fmt.Printf("SHA256: %x\n", h_sha.Sum(nil))
+        io.WriteString(h_blake2s, "Welcome to Go Language Secure Coding Practices")
+        fmt.Printf("MD5        : %x\n", h_md5.Sum(nil))
+        fmt.Printf("SHA256     : %x\n", h_sha.Sum(nil))
+        fmt.Printf("Blake2s-256: %x\n", h_blake2s.Sum(nil))
 }
 ```
 
 The output
 
 ```
-MD5   : ea9321d8fb0ec6623319e49a634aad92
-SHA256: ba4939528707d791242d1af175e580c584dc0681af8be2a4604a526e864449f6
+MD5        : ea9321d8fb0ec6623319e49a634aad92
+SHA256     : ba4939528707d791242d1af175e580c584dc0681af8be2a4604a526e864449f6
+Blake2s-256: 1d65fa02df8a149c245e5854d980b38855fd2c78f2924ace9b64e8b21b3f2f82
 ```
+
+**Note**: to run the source code sample you'll need to run
+`$ go get golang.org/x/crypto/blake2s`
 
 On the other hand, encryption turns data into variable length data using a key
 
@@ -163,3 +175,7 @@ instead of the implementations in the [`crypto/*` package][1].
 [1]: https://golang.org/pkg/crypto/
 [2]: https://golang.org/pkg/crypto/md5/
 [3]: /authentication-password-management.html
+[4]: https://blake2.net/
+[5]: https://godoc.org/golang.org/x/crypto/blake2b
+[6]: https://godoc.org/golang.org/x/crypto/blake2s
+
