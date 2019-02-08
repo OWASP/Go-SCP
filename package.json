@@ -10,9 +10,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "node_modules/.bin/gitbook serve",
-    "build-pdf": "node_modules/.bin/gitbook pdf ./ ./build/go-webapp-scp.pdf",
-    "build-epub": "node_modules/.bin/gitbook epub ./ ./build/go-webapp-scp.epub",
-    "build-mobi": "node_modules/.bin/gitbook mobi ./ ./build/go-webapp-scp.mobi",
+    "build-pdf": "node_modules/.bin/gitbook pdf ./ ./dist/go-webapp-scp.pdf",
+    "build-epub": "node_modules/.bin/gitbook epub ./ ./dist/go-webapp-scp.epub",
+    "build-mobi": "node_modules/.bin/gitbook mobi ./ ./dist/go-webapp-scp.mobi",
     "build": "npm run build-pdf; npm run build-epub; npm run build-mobi"
   },
   "keywords": [
