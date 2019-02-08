@@ -1,8 +1,5 @@
-The [GitBook][8] version of this book, for easy online reading, can be found here:
-[https://checkmarx.gitbooks.io/go-scp][9]
-
-The book can be downloaded in PDF, Mobi and ePub formats here:
-[https://www.gitbook.com/book/checkmarx/go-scp][10]
+You can download this book in the following formats: [PDF][12], [Mobi][13] and
+[ePub][14].
 
 # Introduction
 
@@ -69,3 +66,6 @@ distribution, you must make clear to others the license terms of this work.
 [9]: https://checkmarx.gitbooks.io/go-scp/
 [10]: https://www.gitbook.com/book/checkmarx/go-scp/
 [11]: https://creativecommons.org/licenses/by-sa/4.0/
+[12]: dist/go-webapp-scp.pdf
+[13]: dist/go-webapp-scp.mobi
+[14]: dist/go-webapp-scp.epub
