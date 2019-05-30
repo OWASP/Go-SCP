@@ -104,6 +104,21 @@ $ npm run serve
 
 The shell output will include a `localhost` URL where you can preview the book.
 
+## How to Build
+
+The book can be compile:
+
+1. Using a Docker container (requires [docker][16] to be installed)
+   ```
+   $ [ ! -z $(docker images -q goscp-builder) ] || docker build -t goscp-builder . \
+       && docker run -v $(pwd):/build --rm goscp-builder npm run build
+   ```
+2. in your workstation, running (requires [node][17] and [calibre][18] to be
+   installed)
+   ```
+   $ npm run build
+   ```
+
 [1]: https://git-scm.com
 [2]: https://gogs.io
 [3]: https://github.com/petervanderdoes/gitflow-avh
@@ -118,3 +133,6 @@ The shell output will include a `localhost` URL where you can preview the book.
 [12]: https://github.com/GitbookIO/gitbook-cli#how-to-install-it
 [14]: http://help.github.com/articles/about-pull-requests
 [15]: https://github.com/Checkmarx/Go-SCP
+[16]: https://www.docker.com/
+[17]: https://nodejs.org/en/
+[18]: https://calibre-ebook.com/download
