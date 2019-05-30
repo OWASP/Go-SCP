@@ -44,4 +44,4 @@ reasons for this:
   as seen above is undesired.
 
 [1]: /input-validation/README.md
-[2]: /output-encodeing/README.md
+[2]: /output-encoding/README.md
