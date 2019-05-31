@@ -158,7 +158,7 @@ information.
 ![HTTP Header Leak](img/InsecureHeader.png)
 Image Credits : [John Mitchell][5]
 
-[1]: ../cryptography-practices/README.md
+[1]: ../cryptographic-practices/README.md
 [2]: https://www.owasp.org/images/0/08/OWASP_SCP_Quick_Reference_Guide_v2.pdf
 [3]: https://tools.ietf.org/html/rfc7507
 [4]: https://ssllabs.com/
