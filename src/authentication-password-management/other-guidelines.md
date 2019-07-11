@@ -1,8 +1,8 @@
 Other guidelines
 ================
 
-Authentication is a critical part of any system so you should always employ
-correct and safe practices. Below are some guidelines to make your
+Authentication is a critical part of any system, therefore you should always
+employ correct and safe practices. Below are some guidelines to make your
 authentication system more resilient:
 
 * "_Re-authenticate users prior to performing critical operations_"
