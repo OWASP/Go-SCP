@@ -2,8 +2,9 @@ Sanitization
 ============
 
 Sanitization refers to the process of removing or replacing submitted data.
-When dealing with data, after the proper validation checks have been made, an
-additional step that is usually taken to strengthen data safety is sanitization.
+When dealing with data, after the proper validation checks have been made,
+sanitization is an additional step that is usually taken to strengthen data
+safety.
 
 The most common uses of sanitization are as follows:
 
@@ -23,9 +24,9 @@ entities to characters.
 Although the `html/template` package has a `stripTags()` function, it's
 unexported. Since no other native package has a function to strip all tags, the
 alternatives are to use a third-party library, or to copy the whole function
-along with it's private classes and functions.
+along with its private classes and functions.
 
-Some of the third-party libraries availilable to achieve this are:
+Some of the third-party libraries available to achieve this are:
 
 * https://github.com/kennygrant/sanitize
 * https://github.com/maxwells/sanitize
@@ -33,9 +34,8 @@ Some of the third-party libraries availilable to achieve this are:
 
 ## Remove line breaks, tabs and extra white space
 
-The `text/template` and the `html/template` include a way to remove
-whitespaces from the template, by using a minus sign `-` inside the action's
-delimiter.
+The `text/template` and the `html/template` include a way to remove whitespaces
+from the template, by using a minus sign `-` inside the action's delimiter.
 
 Executing the template with source
 
@@ -68,10 +68,9 @@ leads to
 ## URL request path
 
 In the `net/http` package there is an HTTP request multiplexer type called
-`ServeMux`. It is used to match the incoming request to the registered
-patterns, and calls the handler that most closely matches the
-requested URL.
-In addition to it's main purpose, it also takes care of sanitizing the URL
+`ServeMux`. It is used to match the incoming request to the registered patterns,
+and calls the handler that most closely matches the requested URL.
+In addition to its main purpose, it also takes care of sanitizing the URL
 request path, redirecting any request containing `.` or `..` elements or
 repeated slashes to an equivalent, cleaner URL.
 
