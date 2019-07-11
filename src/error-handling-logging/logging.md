@@ -1,7 +1,7 @@
 Logging
 =======
 
-Logging should always be handled by the application and should not rely on
+Logging should always be handled by the application and should not rely on a
 server configuration.
 
 All logging should be implemented by a master routine on a trusted system, and
@@ -11,19 +11,19 @@ any debugging or stack trace information.
 Additionally, logging should cover both successful and unsuccessful security
 events, with an emphasis on important log event data.
 
-Important event data most commonly refers to:
+Important event data most commonly refers to all:
 
-* All input validation failures.
-* All authentication attempts, especially failures.
-* All access control failures.
-* All apparent tampering events, including unexpected changes to state data.
-* All attempts to connect with invalid or expired session tokens.
-* All system exceptions.
-* All administrative functions, including changes to security configuration
+* Input validation failures.
+* Authentication attempts, especially failures.
+* Access control failures.
+* Apparent tampering events, including unexpected changes to state data.
+* Attempts to connect with invalid or expired session tokens.
+* System exceptions.
+* Administrative functions, including changes to security configuration
   settings.
-* All backend TLS connection failures and cryptographic module failures.
+* Backend TLS connection failures and cryptographic module failures.
 
-A simple log example which illustrates this:
+Here's a simple log example which illustrates this:
 
 ```go
 func main() {
@@ -52,42 +52,42 @@ func main() {
 }
 ```
 
-It's also good practice to implement generic error messages or custom error
-pages as a way to make sure that no information is leaked when an error
+It's also good practice to implement generic error messages, or custom error
+pages, as a way to make sure that no information is leaked when an error
 occurs.
 
 ---
 
-[Go's log package][0], as per the documentation, "implements a **simple**
-logging" and some common and important features are missing, such as leveled
+[Go's log package][0], as per the documentation, "implements **simple**
+logging". Some common and important features are missing, such as leveled
 logging (e.g. `debug`, `info`, `warn`, `error`, `fatal`, `panic`) and formatters
-support (e.g. logstash): these are two important features to make logs usable
+support (e.g. logstash). These are two important features to make logs usable
 (e.g. for integration with a Security Information and Event Management system).
 
-Most, if not all, third-party logging packages offer these and other features.
-The ones below are some of the post popular third-party logging packages:
+Most, if not all third-party logging packages offer these and other features.
+The ones below are some of the most popular third-party logging packages:
 
 * [Logrus][1] - https://github.com/Sirupsen/logrus
 * [glog][2]   - https://github.com/golang/glog
 * [loggo][3]  - https://github.com/juju/loggo
 
-An important note regarding [Go's log package][0]: both Fatal and Panic
+Here's an important note regarding [Go's log package][0]: both Fatal and Panic
 functions do much more than logging. Panic functions call `panic` after writing
-the log message what is not generally accepted for libraries and Fatal functions
-call `os.Exit(1)` after writing the log message what may terminate the program
-preventing deferred statements to run, buffers to be flushed and/or temporary
-data to be removed.
+the log message. What is not generally accepted for libraries and Fatal
+functions call `os.Exit(1)` after writing the log message that may terminate the
+program preventing deferred statements to run, buffers to be flushed, and/or
+temporary data to be removed.
 
 ---
 
-From the log access perspective, only authorized individuals should have
+From the perspective of log access, only authorized individuals should have
 access to the logs.
 Developers should also make sure that a mechanism that allows for log
 analysis is set in place, as well as guarantee that no untrusted data will
 be executed as code in the intended log viewing software or interface.
 
-Regarding allocated memory cleanup, Go has an built-in Garbage Collector
-for this very purpose.
+Regarding allocated memory cleanup, Go has a built-in Garbage Collector for this
+very purpose.
 
 As a final step to guarantee log validity and integrity, a cryptographic
 hash function should be used as an additional step to ensure no log
