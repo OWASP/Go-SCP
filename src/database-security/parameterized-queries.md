@@ -6,7 +6,7 @@ way to protect against SQL Injections.
 
 In some reported situations, prepared statements could harm performance of the
 web application. Therefore, if for any reason you need to stop using this type
-of database queries, we strongly suggest to read [Input Validation][1] and
+of database queries, we strongly suggest you read [Input Validation][1] and
 [Output Encoding][2] sections.
 
 Go works differently from usual prepared statements on other languages - you
@@ -20,8 +20,8 @@ don't prepare a statement on a connection. You prepare it on the DB.
    If it's not available it will try to find another connection in the pool
 
 This type of flow could cause high-concurrency usage of the database and creates
-lots of prepared statements.
-So, it's important to keep this information in mind.
+lots of prepared statements. Therefore, it's important to keep this information
+in mind.
 
 Here's an example of a prepared statement with parameterized queries:
 

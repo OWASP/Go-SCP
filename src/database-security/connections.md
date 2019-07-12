@@ -4,12 +4,12 @@ Database Connections
 ## The concept
 
 `sql.Open` does not return a database connection but `*DB`: a database
-connection pool. When a database operation is about to run (e.g. query) an
+connection pool. When a database operation is about to run (e.g. query), an
 available connection is taken from the pool, which should be returned to the
 pool as soon as the operation completes.
 
-Remind that a database connection will be opened only when first required to
-perform a database operation such as a query.
+Remember that a database connection will be opened only when first required to
+perform a database operation, such as a query.
 `sql.Open` doesn't even test database connectivity: wrong database credentials
 will trigger an error at the first database operation execution time.
 
@@ -20,7 +20,7 @@ Looking for a _rule of thumb_, the context variant of `database/sql` interface
 From the official Go documentation "_Package context defines the Context type,
 which carries deadlines, cancelation signals, and other request-scoped values
 across API boundaries and between processes._".
-At a database level when the context is canceled, a transaction will be rolled
+At a database level, when the context is canceled, a transaction will be rolled
 back if not committed, a Rows (from QueryContext) will be closed and any
 resources will be returned.
 
@@ -84,10 +84,11 @@ func (p *program) doOperation() error {
 ## Connection string protection
 
 To keep your connection strings secure, it's always a good practice to put the
-authentication details on a separated configuration file outside public access.
+authentication details on a separated configuration file, outside of public
+access.
 
 Instead of placing your configuration file at `/home/public_html/`, consider
-`/home/private/configDB.xml` (should be placed in a protected area)
+`/home/private/configDB.xml`: a protected area.
 
 ```xml
 <connectionDB>
@@ -109,12 +110,13 @@ After reading the file, make the database connection:
 db, _ := sql.Open(serverDB, userDB, passDB)
 ```
 
-Of course, if the attacker has root access, he could see the file. Which brings
-us to the most cautious thing you can do - encrypt the file.
+Of course, if the attacker has root access, he will be able to see the file.
+Which brings us to the most cautious thing you can do - encrypt the file.
 
 ## Database Credentials
 
-You should use different credentials for every trust distinction and level:
+You should use different credentials for every trust distinction and level, for
+example:
 
 * User
 * Read-only user
