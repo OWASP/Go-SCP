@@ -6,23 +6,24 @@ protection. You don't want something like:
 
 ![All your data are belong to us](files/cB52MA.jpeg)
 
-In a nutshell, data from your web application needs to be protected, so in this
-section we will take a look at the different ways to secure it.
+Simply put, data from your web application needs to be protected. Therefore in
+this section, we will take a look at the different ways to secure it.
 
-One of the first things you should take care is creating and implementing the
-right privileges for each user and restrict them to only the functions they
+One of the first things you should tend to is creating and implementing the
+right privileges for each user, and restrict them to only the functions they
 really need.
 
 For example, consider a simple online store with the following user roles:
 
-* _Sales user_: Permission only to view catalog
+* _Sales user_: Allowed to only view a catalog
 * _Marketing user_: Allowed to check statistics
 * _Developer_: Allowed to modify pages and web application options
 
 Also, in the system configuration (aka webserver), you should define the right
 permissions.
 
-The main thing is to define the right role for each user - web or system.
+The primary thing to perform is to define the right role for each user - web or
+system.
 
 Role separation and access controls are further discussed in
 the [Access Control][1] section.
@@ -43,7 +44,7 @@ sometimes, in the worst case scenario, developers may leave credentials.
 fmt.Println("Just a random code")
 ```
 
-In the above example, the developer has a endpoint in a comment which, if not
+In the above example, the developer has an endpoint in a comment which, if not
 well protected, could be used by a malicious user.
 
 ### URL
@@ -60,7 +61,7 @@ application vulnerable because:
 req, _ := http.NewRequest("GET", "http://mycompany.com/api/mytoken?api_key=000s3cr3t000", nil)
 ```
 
-If you web application tries to get information from a third-party website
+If your web application tries to get information from a third-party website
 using your ```api_key```, it could be stolen if anyone is listening within your
 network. This is due to the lack of HTTPS and the parameters being passed
 through GET.
@@ -71,43 +72,43 @@ Also, if your web application has links to the example site:
 http://mycompany.com/api/mytoken?api_key=000s3cr3t000
 ```
 
-It will be stored in your browser history so, again, it can be stolen.
+It will be stored in your browser history, so again, it can be stolen.
 
 Solutions should always use HTTPS. Furthermore, try to pass the parameters using
-the POST method and, if possible, use one time only session IDs or token.
+the POST method. And, if possible, use one-time only session IDs or tokens.
 
 ### Information is power
 
 You should always remove application and system documentation on the production
-environment. Some documents could disclose versions, or even functions that could
-be used to attack your web application (e.g. Readme, Changelog, etc.).
+environment. Some documents could disclose versions, or even functions that
+could be used to attack your web application (e.g. Readme, Changelog, etc.).
 
 As a developer, you should allow the user to remove sensitive information that
-is no longer used. Imagine that the user has expired credit cards on
-his account and wants to remove them - your web application should allow it.
+is no longer used. For example, if the user has expired credit cards on his
+account and wants to remove them, your web application should allow it.
 
 All of the information that is no longer needed must be deleted from the
 application.
 
 #### Encryption is the key
 
-Every highly sensitive information should be encrypted in your web application.
-Use the military-grade [encryption available in Go][2]; for more information,
-see the [Cryptographic Practices][3] section.
+Every piece of highly-sensitive information should be encrypted in your web
+application. Use the military-grade [encryption available in Go][2]. For more
+information, see the [Cryptographic Practices][3] section.
 
 If you need to implement your code elsewhere, just build and share the
-binary - there's no bulletproof solution to prevent reverse engineering.
+binary, since there's no bulletproof solution to prevent reverse engineering.
 
 Getting different permissions for accessing the code and limiting the access
-for your source-code is the best approach.
+for your source-code, is the best approach.
 
 Do not store passwords, connection strings (see example for how to secure database
-connection strings on [Database Security][4] section) or other sensitive
+connection strings on [Database Security][4] section), or other sensitive
 information in clear text or in any non-cryptographically secure manner on the
 client side.
 This includes embedding in insecure formats (e.g. Adobe flash or compiled code).
 
-A small example of encryption in Go using and external package
+Here's a small example of encryption in Go using an external package
 `golang.org/x/crypto/nacl/secretbox`:
 
 ```go
@@ -148,7 +149,7 @@ if !ok {
 fmt.Println(string(decrypted))
 ```
 
-Output will be:
+The output will be:
 
 ```
 hello world
@@ -203,8 +204,8 @@ w.Header().Set("Pragma", "no-cache")
 The `no-cache` value tells the browser to revalidate with the server before
 using any cached response. It does not tell the browser to _not cache_.
 
-On the other hand, `no-store` value is really - _Hey stop caching!_ - and
-must not store any part of the request or response.
+On the other hand, the `no-store` value is really about disabling caching
+overall, and must not store any part of the request or response.
 
 The `Pragma` header is there to support HTTP/1.0 requests.
 

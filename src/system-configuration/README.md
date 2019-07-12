@@ -1,8 +1,8 @@
 System Configuration
 ====================
 
-Keeping things updated is key in security. So, with that in mind, developers
-should keep Go updated to the latest version as well as external packages and
+Keeping things updated is imperative in security. With that in mind, developers
+should keep Go updated to the latest version, as well as external packages and
 frameworks used by the web application.
 
 Regarding HTTP requests in Go, you need to know that any incoming server
@@ -28,8 +28,8 @@ If you run a Go web server application, you should also be careful with this:
 http.ListenAndServe(":8080", http.FileServer(http.Dir("/tmp/static")))
 ```
 
-If you call `localhost:8080`, it will open your index.html. But imagine you
-have a test directory that has a sensitive file inside?
+If you call `localhost:8080`, it will open your index.html. But imagine that you
+have a test directory that has a sensitive file inside. What happen next?
 
 ![password file is shown](files/index_file.png)
 
@@ -37,7 +37,7 @@ Why does this happen?
 Go tries to find an `index.html` inside the directory, and if it
 doesn't exist, it will show the directory listing.
 
-To fix this you have three possible solutions:
+To fix this, you have three possible solutions:
 
 * Disable directory listings in your web application
 * Restrict access to unnecessary directories and files
@@ -61,7 +61,7 @@ func (fs justFilesFilesystem) Open(name string) (http.File, error) {
 }
 ```
 
-Then we simply use it in our `http.ListenAndServe` as such:
+Then we simply use it in our `http.ListenAndServe` as follows:
 
 ```go
 fs := justFilesFilesystem{http.Dir("tmp/static/")}
@@ -82,11 +82,11 @@ also shown the same error.
 
 On production environments, remove all functionalities and files that you don't
 need. Any test code and functions not needed on the final version
-(ready to go to production), should stay on the developer layer and not in a
+(ready to go to production), should stay on the developer layer, and not in a
 location everyone can see - _aka_ public.
 
-HTTP Response Headers should also be checked. Removing the headers which
-disclose sensitive information like:
+HTTP Response Headers should also be checked. Remove the headers which disclose
+sensitive information like:
 
 * OS version
 * Webserver version
@@ -97,8 +97,8 @@ disclose sensitive information like:
 This information can be used by attackers to check for vulnerabilities in the
 versions you disclose, therefore, it is advised to remove them.
 
-By default, this is not disclosed by Go. However, if you use any type of external
-package or framework, don't forget to double-check it.
+By default, this is not disclosed by Go. However, if you use any type of
+external package or framework, don't forget to double-check it.
 
 Try to find something like:
 
@@ -117,13 +117,13 @@ following code:
 w.Header().Set("Access-Control-Allow-Methods", "POST, GET")
 ```
 
-Don't worry about disabling things like WebDAV because if you want to implement
-a WebDAV server you need to [import a package][2].
+Don't worry about disabling things like WebDAV. If you want to implement a
+WebDAV server, you need to [import a package][2].
 
 ## Implement better security
 
-Put your mindset hat on and follow the [least privilege principle][1] on the web
-server, processes and service accounts.
+Keep security in mind and follow the [least privilege principle][1] on the web
+server, processes, and service accounts.
 
 Take care of your web application error handling. When exceptions occur, fail
 securely. You can check [Error Handling and Logging][5] section in this guide
@@ -131,7 +131,7 @@ for more information regarding this topic.
 
 Prevent disclosure of the directory structure on your `robots.txt` file.
 `robots.txt` is a direction file and __NOT__ a security control.
-Adopt a white-list approach:
+Adopt a white-list approach as follows:
 
 ```
 User-agent: *
@@ -143,7 +143,7 @@ Disallow: /
 ```
 
 The example above will allow any user-agent or bot to index those specific
-pages and disallow the rest. This way you don't disclose sensitive folders or
+pages, and disallow the rest. This way you don't disclose sensitive folders or
 pages - like admin paths or other important data.
 
 Isolate the development environment from the production network. Provide the
@@ -151,8 +151,8 @@ right access to developers and test groups, and better yet, create additional
 security layers to protect them. In most cases, development environments are
 easier targets to attacks.
 
-Lastly, but still very important, is to have a software change control system to
-manage and record changes in your web application code (development and
+Finally, but still very important, is to have a software change control system
+to manage and record changes in your web application code (development and
 production environments). There are numerous Github host-yourself clones that
 can be used for this purpose.
 
@@ -166,8 +166,8 @@ section.
 performs in order to achieve the optimum performance of their assets in line
 with its objectives, as well as the evaluation of the required level of security
 of each asset.
-It should be noted that in this section, when we refer to _Assets_ we are not
-only talking about the system's components but also it's software.
+It should be noted that in this section, when we refer to _Assets_, we are not
+only talking about the system's components but also its software.
 
 The steps involved in the implementation of this system are as follows:
 

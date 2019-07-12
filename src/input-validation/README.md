@@ -3,28 +3,27 @@ Input Validation
 
 In web application security, user input and its associated data are a security
 risk if left unchecked.
-We address these problems by using "Input Validation" and "Input Sanitization"
-techniques.
-These validations should be performed in every tier of the application, as per
-the server's function. An important note is that all data validation procedures
-must be done on trusted systems (i.e. on the server).
+We address this risk by using "Input Validation" and "Input Sanitization". These
+should be performed in every tier of the application, according to the server's
+function. An important note is that all data validation procedures must be done
+on trusted systems (i.e. on the server).
 
-As noted in the [OWASP SCP Quick Reference Guide][1], there are sixteen
-bullet points that cover the issues that the developer should be aware of when
-dealing with Input Validation.
+As noted in the [OWASP SCP Quick Reference Guide][1], there are sixteen bullet
+points that cover the issues that developers should be aware of when dealing
+with Input Validation.
 A lack of consideration for these security risks when developing an application
 is one of the main reasons [Injection][2] ranks as the number 1 vulnerability
 in the "[OWASP Top 10][3]".
 
-User interaction is a staple of the current development paradigm in web
-applications. As web applications become increasingly richer in content and
-possibilities, user interaction and submitted user data also increases.
-It is in this context that Input Validation plays a significant role.
+User interaction is a fundamental requirement of the current development
+paradigm in web applications. As web applications become increasingly richer in
+content and possibilities, user interaction and submitted user data also
+increases. It is in this context that Input Validation plays a significant role.
 
-When applications handle user data, submitted data **must be considered
-insecure by default**, and only accepted after the appropriate security checks
-have been made. Data sources must also be identified as trusted, or untrusted,
-and in case of an untrusted source, validation checks must be made.
+When applications handle user data, the input data **must be considered insecure
+by default**, and only accepted after the appropriate security checks have been
+made. Data sources must also be identified as trusted, or untrusted, and in the
+case of an untrusted source, validation checks must be made.
 
 In this section an overview of each technique is provided, along with a sample
 in Go to illustrate the issues.

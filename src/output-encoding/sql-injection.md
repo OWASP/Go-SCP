@@ -1,10 +1,10 @@
 SQL Injection
 =============
 
-Another common injection due to the lack of proper output encoding is SQL
-Injection, mostly because of an old bad practice: string concatenation.
+Another common injection that's due to the lack of proper output encoding is SQL
+Injection. This is mostly due to an old bad practice: string concatenation.
 
-In short: whenever a variable holding a value which may include arbitrary
+In short, whenever a variable holding a value which may include arbitrary
 characters such as ones with special meaning to the database management system
 is simply added to a (partial) SQL query, you're vulnerable to SQL Injection.
 
@@ -17,10 +17,11 @@ query := "SELECT number, expireDate, cvv FROM creditcards WHERE customerId = " +
 
 row, _ := db.QueryContext(ctx, query)
 ```
-You’re about to ruin your life.
 
-When provided a valid `customerId` you will list only that customer's credit
-cards, but what if `customerId` becomes `1 OR 1=1`?
+You're about to be exploited and subsequently breached.
+
+For example, when provided a valid `customerId` value you will only list that
+customer's credit card(s). But what if `customerId` becomes `1 OR 1=1`?
 
 Your query will look like:
 
@@ -39,7 +40,7 @@ query := "SELECT number, expireDate, cvv FROM creditcards WHERE customerId = ?"
 
 stmt, _ := db.QueryContext(ctx, query, customerId)
 ```
-Notice the placeholder `?` and how your query is:
+Notice the placeholder `?`. Your query is now:
 
  * readable,
  * shorter and
@@ -53,7 +54,7 @@ For example, comparing MySQL, PostgreSQL, and Oracle:
 | WHERE col = ? | WHERE col = $1 | WHERE col = :col |
 | VALUES(?, ?, ?) | VALUES($1, $2, $3) | VALUES(:val1, :val2, :val3) |
 
-Check Database Security section in this guide to get more in-depth information
-about this topic.
+Check the Database Security section in this guide to get more in-depth
+information about this topic.
 
 [1]: https://golang.org/pkg/database/sql/#DB.Prepare
