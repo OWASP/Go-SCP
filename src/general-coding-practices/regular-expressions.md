@@ -1,8 +1,8 @@
 Regular Expressions
 ===================
 
-Regular Expressions are a powerful tool widely used to perform searches and
-validations. In the context of a web application they are commonly used to
+Regular Expressions are a powerful tool that's widely used to perform searches
+and validations. In the context of a web applications they are commonly used to
 perform input validation (e.g. Email address).
 
 > Regular expressions are a notation for describing sets of character strings.
@@ -12,8 +12,8 @@ perform input validation (e.g. Email address).
 It is well-known that Regular Expressions are hard to master. Sometimes, what
 seems to be a simple validation, may lead to a [Denial-of-Service][2].
 
-Go authors took it seriously and, unlike other programming languages, opted by
-a [RE2][3] implementation for the [regex standard package][4].
+Go authors took it seriously, and unlike other programming languages, the
+decided to implement [RE2][3] for the [regex standard package][4].
 
 ## Why RE2
 
@@ -21,7 +21,7 @@ a [RE2][3] implementation for the [regex standard package][4].
 > regular expressions from untrusted users without risk. ([source][10])
 
 With security in mind, RE2 also guarantees a linear-time performance and
-graceful failing: the memory available to the parser, the compiler and the
+graceful failing: the memory available to the parser, the compiler, and the
 execution engines is limited.
 
 ## Regular Expression Denial of Service (ReDoS)
@@ -33,14 +33,14 @@ execution engines is limited.
 > process is due to the implementation of the regular expression in use, for
 > example, recursive backtracking ones. ([source][8])
 
-You're better reading the full article "[Diving Deep into Regular Expression
-Denial of Service (ReDoS) in Go][8]" as it goes deep into the problem and also
-includes comparison between most popular programming languages. In this section
-we will focus on a real world use case.
+You're better off reading the full article "[Diving Deep into Regular Expression
+Denial of Service (ReDoS) in Go][8]" as it goes deep into the problem, and also
+includes comparisons between the most popular programming languages. In this
+section we will focus on a real-world use case.
 
-For some reason you're looking for a Regular Expression to validate Email
-addresses provided on your signup form. After a quick search you found this
-[RegEx for email validation at RegExLib.com][9]
+Say for some reason you're looking for a Regular Expression to validate Email
+addresses provided on your signup form. After a quick search, you found this
+[RegEx for email validation at RegExLib.com][9]:
 
 ```
 ^([a-zA-Z0-9])(([\-.]|[_]+)?([a-zA-Z0-9]+))*(@){1}[a-z0-9]+[.]{1}(([a-z]{2,3})|([a-z]{2,3}[.]{1}[a-z]{2,3}))$
@@ -48,7 +48,7 @@ addresses provided on your signup form. After a quick search you found this
 
 If you try to match `john.doe@somehost.com` against this regular expression you
 may feel confident that it does what you're looking for. If you're developing
-using Go, you'll come up with something like
+using Go, you'll come up with something like this:
 
 ```go
 package main
@@ -70,7 +70,7 @@ func main() {
 }
 ```
 
-what is just fine
+Which is not a problem:
 
 ```
 $ go run src/redos.go
@@ -78,7 +78,7 @@ true
 false
 ```
 
-What if you're developing with, for example, JavaScript?
+However, what if you're developing with, for example, JavaScript?
 
 ```JavaScript
 const testString1 = 'john.doe@somehost.com';
@@ -92,26 +92,28 @@ console.log(regex.test(testString2));
 
 ```
 
-This time, **execution will hang forever** and your application will attend no
-further requests (at least this process), meaning **no further signups until the
-application gets restarted**, meaning **business loss**.
+In this case, **execution will hang forever** and your application will service
+no further requests (at least this process). This means **no further signups
+will work until the application gets restarted**, resulting in **business
+losses**.
 
 ## What's missing?
 
-If you have background with other programming languages such as Perl, Python,
-PHP or JavaScript you should be aware of the differences regarding Regular
+If you have a background with other programming languages such as Perl, Python,
+PHP, or JavaScript, you should be aware of the differences regarding Regular
 Expression supported features.
 
-RE2 does not support constructs for which only backtracking solutions are known
-to exist such as [Backreferences][5] and [Lookaround][6].
+RE2 does not support constructs where only backtracking solutions are known to
+exist, such as [Backreferences][5] and [Lookaround][6].
 
 Consider the following problem: validating whether an arbitrary string is a
-well-formed HTML tag: a) opening and closing tag names match and b) optionally
+well-formed HTML tag: a) opening and closing tag names match, and b) optionally
 there's some text in between.
 
-Fulfill requirement b) is straightforward `.*?`, but a) is challenging as
-closing tag match depends on what was matched as opening tag. This is exactly
-what Backreferences allows us to do. Check the JavaScript implementation below
+Fulfilling requirement b) is straightforward `.*?`. But fulling requirement a)
+is challenging because closing a tag match depends on what was matched as the
+opening tag. This is exactly what Backreferences allows us to do. See the
+JavaScript implementation below:
 
 ```JavaScript
 const testString1 = '<h1>Go Secure Coding Practices Guide</h1>';
@@ -130,7 +132,7 @@ console.log(regex.test(testString3));
 
 `\1` will hold the value previously captured by `([A-Z][A-Z0-9]*)`.
 
-This is something you should not expect to do in Go
+This is something you should not expect to do in Go.
 
 ```go
 package main
@@ -153,7 +155,7 @@ func main() {
 
 ```
 
-Running Go source code sample above should result in the following errors
+Running the Go source code sample above should result in the following errors:
 
 ```
 $ go run src/backreference.go
@@ -163,13 +165,13 @@ src/backreference.go:12:67: non-octal character in escape sequence: >
 ```
 
 You may feel tempted to fix these errors, coming up with the following regular
-expression
+expression:
 
 ```
 <([a-z][a-z0-9]*)\b[^>]*>.*?<\\/\\1>
 ```
 
-Then, this is what you'll get
+Then, this is what you'll get:
 
 ```
 go run src/backreference.go
@@ -183,12 +185,12 @@ main.main()
 exit status 2
 ```
 
-While developing something from scratch you'll probably find a nice workaround
-to the lack of some features. On the other hand, porting existing software may
-make you look for full featured alternative to the standard Regular Expression
-package, and you'll find some (e.g. [dlclark/regexp2][7]). Keep in mind that,
-then you'll (probably) lose RE2 "safety features" such as the linear-time
-performance.
+While developing something from scratch, you'll probably find a nice workaround
+to help with the lack of some features. On the other hand, porting existing
+software could make you look for full featured alternative to the standard
+Regular Expression package, and you'll likely find some (e.g.
+[dlclark/regexp2][7]). Keeping that in mind, then you'll (probably) lose RE2's
+"safety features" such as the linear-time performance.
 
 [1]: https://swtch.com/~rsc/regexp/regexp1.html
 [2]: #regular-expression-denial-of-service-redos
@@ -200,4 +202,3 @@ performance.
 [8]: https://www.checkmarx.com/2018/05/07/redos-go/
 [9]: http://regexlib.com/REDetails.aspx?regexp_id=1757
 [10]: https://github.com/google/re2/wiki/WhyRE2
-

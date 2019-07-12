@@ -32,7 +32,7 @@ Summary
     * [Stored Procedures](database-security/stored-procedures.md)
 * [File Management](file-management/README.md)
 * [Memory Management](memory-management/README.md)
-* [General Coding Practices](general-coding-practices/README.md)
+* General Coding Practices
     * [Cross-Site Request Forgery](general-coding-practices/cross-site-request-forgery.md)
     * [Regular Expressions](general-coding-practices/regular-expressions.md)
 * [How To Contribute](howto-contribute.md)
