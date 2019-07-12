@@ -41,7 +41,7 @@ conceive, develop, acquire, operate, and maintain applications that can be
 trusted. All of the OWASP tools, documents, forums, and chapters are free and
 open to anyone interested in improving application security_" ([source][5]).
 
-## How To Contribute
+## How to Contribute
 
 This book was created using a few open source tools.
 If you're curious about how we built it from scratch, read the

@@ -6,7 +6,7 @@ order to guarantee that the user is indeed entering the expected data.
 
 **IMPORTANT:** If the validation fails, the input must be rejected.
 
-This is important not only from a security standpoint but from the perpective
+This is important not only from a security standpoint but from the perspective
 of data consistency and integrity, since data is usually used across a variety
 of systems and applications.
 
@@ -16,7 +16,7 @@ developing web applications in Go.
 ## User Interactivity
 
 Any part of an application that allows user input is a potential security risk.
-Problems can occur not only from bad agents that seek a way to compromise the
+Problems can occur not only from threat actors that seek a way to compromise the
 application, but also from erroneous input caused by human error (statistically,
 the majority of the invalid data situations are usually caused by human error).
 In Go there are several ways to protect against such issues.
@@ -81,11 +81,9 @@ Third-party packages exist that handle security in Go:
   application security.
   It has support for `websockets`, `cookie sessions`, `RPC`, among
   others.
-
 * [Form][7] - Decodes `url.Values` into Go value(s) and Encodes Go value(s)
   into `url.Values`.
   Dual `Array` and Full `map` support.
-
 * [Validator][8] - Go `Struct` and `Field` validation, including `Cross Field`,
   `Cross Struct`, `Map` as well as `Slice` and `Array` diving.
 
@@ -104,10 +102,9 @@ the document.
 
 ## Data sources
 
-Anytime data is passed from a trusted source to a less trusted source,
-integrity checks should be made.
-This guarantees that the data has not been tampered with and we are receiving
-the intended data. Other data source checks include:
+Anytime data is passed from a trusted source to a less-trusted source, integrity
+checks should be made. This guarantees that the data has not been tampered with
+and we are receiving the intended data. Other data source checks include:
 
 * _Cross-system consistency checks_
 * _Hash totals_
@@ -123,41 +120,37 @@ validated.
 ## Post-validation Actions
 
 According to Data Validation's best practices, the input validation is only
-the first part of the data validation guidelines. As such,
+the first part of the data validation guidelines. Therefore,
 _Post-validation Actions_ should also be performed.
 The _Post-validation Actions_ used vary with the context and are divided in
 three separate categories:
 
 * **Enforcement Actions**
-
   Several types of _Enforcement Actions_ exist in order to better secure our
   application and data.
 
   * inform the user that submitted data has failed to comply with the
-    requirements and therefor the data should be modified in order to comply
+    requirements and therefore the data should be modified in order to comply
     with the required conditions.
-
   * modify user submitted data on the server side without notifying the user of
-    said changes. This is most suitable in systems with interactive usage.
+    the changes made. This is most suitable in systems with interactive usage.
 
   **Note:** The latter is used mostly in cosmetic changes (modifying sensitive
-  user data can lead to problems like truncating, which incur in data loss).
+  user data can lead to problems like truncating, which result in data loss).
 * **Advisory Action**
-
   Advisory Actions usually allow for unchanged data
   to be entered, but the source actor is informed that there were issues with
   said data. This is most suitable for non-interactive systems.
 * **Verification Action**
+  Verification Action refer to special cases in Advisory Actions. In these
+  cases, the user submits the data and the source actor asks the user to verify
+  the data and suggests changes. The user then accepts these changes or keeps
+  his original input.
 
-  Verification Action refer to special cases in
-  Advisory Actions. In these cases, the user submits the data and the source
-  actor asks the user to verify said data and suggests changes. The user then
-  accepts these changes or keeps his original input.
-
-A simple way to illustrate this is a Billing address form, where the user
-enters his address and the system suggests addresses associated with the
-account. The user then accepts one of these suggestions or ships to the address
-that was initially entered.
+  A simple way to illustrate this is a billing address form, where the user
+  enters his address and the system suggests addresses associated with the
+  account. The user then accepts one of these suggestions or ships to the
+  address that was initially entered.
 
 ---
 

@@ -2,7 +2,7 @@ HTTP/TLS
 =========
 
 `TLS/SSL` is a cryptographic protocol that allows encryption over otherwise
-unsecure communication channels. The most common usage of it is to provide
+unsecure communication channels. The most common usage of TLS/SSL is to provide
 secure `HTTP` communication, also known as `HTTPS`. The protocol ensures that
 the following properties apply to the communication channel:
 
@@ -12,11 +12,11 @@ the following properties apply to the communication channel:
 
 Its implementation in Go is in the `crypto/tls` package.
 In this section we will focus on the Go implementation and usage.
-Although the theoretical part of the protocol design and it's cryptographic
+Although the theoretical part of the protocol design and its cryptographic
 practices are beyond the scope of this article, additional information is
 available on the [Cryptography Practices][1] section of this document.
 
-The following is a simple example of an HTTP with TLS:
+The following is a simple example of HTTP with TLS:
 
 ```go
 import "log"
@@ -34,7 +34,7 @@ func main() {
 ```
 
 This is a simple out-of-the-box implementation of SSL in a webserver using Go.
-It's worth noting that this example gets an "A" on SSL Labs.
+It's worth noting that this example gets an "A" grade on SSL Labs.
 
 To further improve the communication security, the following flag could be added
 to the header, in order to enforce HSTS (HTTP Strict Transport Security):
@@ -43,10 +43,11 @@ w.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains
 ```
 
 Go's TLS implementation is in the `crypto/tls` package. When using TLS, make
-sure that a single standard TLS implementation is used and that it's
+sure that a single standard TLS implementation is used, and that it's
 appropriately configured.
 
-Implementing SNI (Server Name Indication) based on the previous example:
+Here's an example of implementing SNI (Server Name Indication) based on the
+previous example:
 
 ```go
 ...
@@ -83,8 +84,8 @@ func main() {
 
 It should be noted that when using TLS, the certificates should be valid, have
 the correct domain name, should not be expired, and should be installed with
-intermediate certificates when required, as recommended in
-the [OWASP SCP Quick Reference Guide][2].
+intermediate certificates when required as recommended in the [OWASP SCP Quick
+Reference Guide][2].
 
 **Important:** Invalid TLS certificates should always be rejected.
 Make sure that the `InsecureSkipVerify` configuration is not set
@@ -105,7 +106,7 @@ Another known attack against TLS to be aware of is called POODLE. It is related
 to TLS connection fallback when the client does not support the server's cypher.
 This allows the connection to be downgraded to a vulnerable cypher.
 
-By default, Go disables SSLv3 and the cypher's minimum version and maximum
+By default, Go disables SSLv3, and the cypher's minimum version and maximum
 version can be set with the following configurations:
 
 ```go
@@ -128,7 +129,7 @@ An additional flag that is commonly used to mitigate downgrade attacks is the
 
 Quote from Google developer Adam Langley:
 
-> The Go client doesn't do fallback so doesn't need to send TLS_FALLBACK_SCSV.
+> The Go client doesn't do fallback so it doesn't need to send TLS_FALLBACK_SCSV.
 
 Another attack known as CRIME affects TLS sessions that use compression.
 Compression is part of the core protocol, but it's optional. Programs written in
@@ -138,7 +139,7 @@ note to keep in mind is if a Go wrapper is used for an external security
 library, the application may be vulnerable.
 
 Another part of TLS is related to the connection renegotiation. To guarantee no
-insecure connections are established, use the `GetClientCertificate` and it's
+insecure connections are established, use the `GetClientCertificate` and its
 associated error code in case the handshake is aborted.
 The error code can be captured to prevent an insecure channel from being used.
 

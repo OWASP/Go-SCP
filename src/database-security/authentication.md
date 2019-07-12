@@ -10,7 +10,7 @@ Always adjust the database user according to your web applications needs.
 ## Use a strong password
 
 When creating your database access, choose a strong password. You can use
-password managers to generate a strong password or use online web applications
+password managers to generate a strong password, or use online web applications
 that do the same for you - [Strong Password Generator][1].
 
 ## Remove default admin passwords
@@ -18,7 +18,7 @@ that do the same for you - [Strong Password Generator][1].
 Most DBS have default accounts and most of them have no passwords on their
 highest privilege user.
 
-MariaDB, MongoDB - root/no password
+For example, MariaDB, and MongoDB use `root` with no password,
 
 Which means that if there is no password, the attacker could gain access to
 everything.

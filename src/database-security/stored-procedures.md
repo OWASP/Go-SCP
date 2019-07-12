@@ -2,7 +2,7 @@ Stored Procedures
 =================
 
 Developers can use Stored Procedures to create specific views on queries to
-prevent sensitive information from being archived rather than using normal
+prevent sensitive information from being archived, rather than using normal
 queries.
 
 By creating and limiting access to stored procedures, the developer is adding
@@ -13,7 +13,7 @@ columns in a security perspective, which is handy.
 
 Let's take a look into at an example...
 
-Imagine you have a table with information regarding users passport IDs.
+Imagine you have a table with information containing users' passport IDs.
 
 Using a query like:
 
@@ -22,8 +22,7 @@ SELECT * FROM tblUsers WHERE userId = $user_input
 ```
 
 Besides the problems of [Input validation][1], the database user (for the
-example's sake, the user is called John) could access __ALL__ information from
-the user ID.
+example John) could access __ALL__ information from the user ID.
 
 What if John only has access to use this stored procedure:
 

@@ -3,17 +3,17 @@ Memory Management
 
 There are several important aspects to consider regarding memory management.
 Following the OWASP guidelines, the first step we must take to protect our
-application is the user input/output. Steps must be taken to ensure no malicious
-content is allowed.
+application pertains to the user input/output. Steps must be taken to ensure no
+malicious content is allowed.
 A more detailed overview of this aspect is in the [Input Validation][1] and the
 [Output Encoding][2] sections of this document.
 
-Another important aspect regarding memory management is the buffer boundary
+Buffer boundary checking is another important aspect of memory management.
 checking. When dealing with functions that accept a number of bytes to copy,
-usually, in C-style languages, the size of the destination array must be checked
-to ensure we don't write past the allocated space. In Go, data types such as
-`String` are not NULL terminated, and in the case of `String` its header
-consists of the following information:
+usually, in C-style languages, the size of the destination array must be
+checked, to ensure we don't write past the allocated space. In Go, data types
+such as `String` are not NULL terminated, and in the case of `String`, its
+header consists of the following information:
 
 ```go
 type StringHeader struct {
@@ -25,7 +25,7 @@ type StringHeader struct {
 Despite this, boundary checks must be made (e.g. when looping).
 If we go beyond the set boundaries, Go will `Panic`.
 
-A simple example:
+Here's a simple example:
 
 ```go
 func main() {
@@ -50,7 +50,7 @@ panic: runtime error: index out of range
 ```
 
 When our application uses resources, additional checks must also be made to
-ensure they have been closed and not rely solely on the Garbage Collector.
+ensure they have been closed, and not rely solely on the Garbage Collector.
 This is applicable when dealing with connection objects, file handles, etc.
 In Go we can use `Defer` to perform these actions. Instructions in `Defer` are
 only executed when the surrounding functions finish execution.
@@ -64,14 +64,14 @@ defer func() {
 More information regarding `Defer` can be found in the [Error Handling][3]
 section of the document.
 
-Usage of known vulnerable functions should also be avoided. In Go, the `Unsafe`
-package contains these functions. They should not be used in production
-environments, nor should the package itself. This also applies to the `Testing`
-package.
+Usage of functions that are known to be vulnerable should also be avoided. In
+Go, the `Unsafe` package contains these functions. They should not be used in
+production environments, nor should the package be used as well. This also
+applies to the `Testing` package.
 
-On the other hand, memory deallocation is handled by the garbage collector, which
-means that we don't have to worry about it. An interesting note is that it _is_
-possible to manually deallocate memory although it is **not** advised.
+On the other hand, memory deallocation is handled by the garbage collector,
+which means that we don't have to worry about it. Please note, it _is_ possible
+to manually deallocate memory, although it is _not_ advised.
 
 Quoting [Golang's Github](https://github.com/golang/go/issues/13761):
 
