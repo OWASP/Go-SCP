@@ -1,4 +1,4 @@
-How To Contribute
+How to Contribute
 =================
 
 This project is based on GitHub and can be accessed by [clicking here][15].
@@ -72,7 +72,7 @@ To keep your work safe, don't forget to publish your feature:
 $ git flow feature publish
 ```
 
-Once you're ready to merge your work with others, you should go to main
+Once you're ready to merge your work with others, you should go to the main
 repository and open a [Pull Request][14] to the `develop` branch. Then, someone
 will review your work, leave any comments, request changes and/or simply merge
 it on branch `develop` of project's main repository.
@@ -91,11 +91,11 @@ $ git flow hotfix start
 This will apply your change on both `develop` and `master` branches.
 
 As you can see, until now there were no commits to the `master` branch. Great!
-This is reserved for `releases`, when the work is ready to become publicly
+This is reserved for `releases`. When the work is ready to become publicly
 available, the project owner will do the release.
 
-While in the development stage, you can live preview your work.
-To get Git Book tracking file changes and to live preview your work, you just
+While in the development stage, you can live-preview your work.
+To get Git Book tracking file changes and to live-preview your work, you just
 need to run the following command on a shell session
 
 ```shell
