@@ -36,3 +36,4 @@ Summary
     * [Cross-Site Request Forgery](general-coding-practices/cross-site-request-forgery.md)
     * [Regular Expressions](general-coding-practices/regular-expressions.md)
 * [How To Contribute](howto-contribute.md)
+* [Final Notes](final-notes.md)

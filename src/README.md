@@ -14,6 +14,35 @@ the same time, learning a new programming language through a
 This book provides a good level of detail on "how to do it securely" showing
 what kind of security problems could arise during development.
 
+## Why This Book
+
+According to Stack Overflow’s annual Developer Survey, Go has made the top 5
+most Loved and Wanted programming languages list for the second year in a row.
+With its surge in popularity, it is critical that applications developed in Go
+are designed with security in mind.
+
+Checkmarx Research Team helps educate developers, security teams, and the
+industry overall about common coding errors, and brings awareness of
+vulnerabilities that are often introduced during the software development
+process.
+
+## The Audience for this Book
+
+The primary audience of the Go Secure Coding Practices Guide is developers,
+particularly the ones with previous experience with other programming languages.
+
+The book is also a great reference to those learning programming for the first
+time, who have already finish the [Go tour][8].
+
+## What You Will Learn
+
+This book covers the [OWASP Secure Coding Practices Guide][3] topic-by-topic,
+providing examples and recommendations using Go, to help developers avoid common
+mistakes and pitfalls.
+
+After reading this book, you'll be more confident you're developing secure Go
+applications.
+
 ## About Checkmarx
 
 [Checkmarx][2] is an Application Security software company, whose mission is to
@@ -23,8 +52,8 @@ the company's 1,000 customers are five of the world's top 10 software vendors,
 four of the top American banks, and many Fortune 500 and government
 organizations, including SAP, Samsung and Salesforce.com.
 
-For more information about Checkmarx, visit [checkmarx.com][2]
-or follow us on Twitter: [@checkmarx][7]
+For more information about Checkmarx, visit [checkmarx.com][2] or follow us on
+Twitter: [@checkmarx][7]
 
 ## About OWASP Secure Coding Practices
 
@@ -51,3 +80,4 @@ If you're curious about how we built it from scratch, read the
 [5]: https://www.owasp.org/index.php/About_OWASP
 [6]: /howto-contribute.md
 [7]: https://www.twitter.com/checkmarx
+[8]: https://tour.golang.org/list
