@@ -103,10 +103,10 @@ config := &tls.Config{ServerName: "yourHostname"}
 ```
 
 Another known attack against TLS to be aware of is called POODLE. It is related
-to TLS connection fallback when the client does not support the server's cypher.
-This allows the connection to be downgraded to a vulnerable cypher.
+to TLS connection fallback when the client does not support the server's cipher.
+This allows the connection to be downgraded to a vulnerable cipher.
 
-By default, Go disables SSLv3, and the cypher's minimum version and maximum
+By default, Go disables SSLv3, and the cipher's minimum version and maximum
 version can be set with the following configurations:
 
 ```go
@@ -122,7 +122,7 @@ version can be set with the following configurations:
 MaxVersion uint16
 ```
 
-The safety of the used cyphers can be checked with [SSL Labs][4].
+The safety of the used ciphers can be checked with [SSL Labs][4].
 
 An additional flag that is commonly used to mitigate downgrade attacks is the
 `TLS_FALLBACK_SCSV` as defined in [RFC7507][3]. In Go, there is no fallback.
