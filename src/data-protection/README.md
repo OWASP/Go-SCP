@@ -56,26 +56,26 @@ application vulnerable because:
 2. Browser history stores the user's information. If the URL has
    session IDs, pins or tokens that don't expire (or have low entropy),
    they can be stolen.
+3. Search engines store URLs as they are found in pages
+4. HTTP servers (e.g. Apache, Nginx), usually write the requested URL, including
+   the query string, to unencrypted log files (e.g. `access_log`)
 
 ```go
 req, _ := http.NewRequest("GET", "http://mycompany.com/api/mytoken?api_key=000s3cr3t000", nil)
 ```
 
 If your web application tries to get information from a third-party website
-using your ```api_key```, it could be stolen if anyone is listening within your
-network. This is due to the lack of HTTPS and the parameters being passed
-through GET.
+using your `api_key`, it could be stolen if anyone is listening within your
+network or if you're using a Proxy. This is due to the lack of HTTPS.
 
-Also, if your web application has links to the example site:
+Also note that parameters being passed through GET (aka query string) will be
+stored in clear, in the browser history and the server's access log regardless
+whether you're using HTTP or HTTPS.
 
-```
-http://mycompany.com/api/mytoken?api_key=000s3cr3t000
-```
-
-It will be stored in your browser history, so again, it can be stolen.
-
-Solutions should always use HTTPS. Furthermore, try to pass the parameters using
-the POST method. And, if possible, use one-time only session IDs or tokens.
+HTTPS is the way to go to prevent external parties other than the client and the
+server, to capture exchanged data. Whenever possible sensitive data such as the
+`api_key` in the example, should go in the request body or some header. The same
+way, whenever possible use one-time only session IDs or tokens.
 
 ### Information is power
 
@@ -102,10 +102,10 @@ binary, since there's no bulletproof solution to prevent reverse engineering.
 Getting different permissions for accessing the code and limiting the access
 for your source-code, is the best approach.
 
-Do not store passwords, connection strings (see example for how to secure database
-connection strings on [Database Security][4] section), or other sensitive
-information in clear text or in any non-cryptographically secure manner on the
-client side.
+Do not store passwords, connection strings (see example for how to secure
+database connection strings on [Database Security][4] section), or other
+sensitive information in clear text or in any non-cryptographically secure
+manner, both on the client and server sides.
 This includes embedding in insecure formats (e.g. Adobe flash or compiled code).
 
 Here's a small example of encryption in Go using an external package
