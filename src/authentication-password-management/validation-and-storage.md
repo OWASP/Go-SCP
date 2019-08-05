@@ -52,8 +52,8 @@ How can we avoid this?
 The point is: if two different users provide the same password `p1`, we should
 store a different hashed value.
 It may sound impossible, but the answer is `salt`: a pseudo-random **unique per
-user password** value which is appended to `p1`, so that the resulting hash is
-computed as follows: `H(p1 + salt)`.
+user password** value which is prepended to `p1`, so that the resulting hash is
+computed as follows: `H(salt + p1)`.
 
 So each entry on a passwords store should keep the resulting hash, and the
 `salt` itself in plaintext: `salt` is not required to remain private.
@@ -89,10 +89,10 @@ func main() {
         panic(err)
     }
 
-    // let's create SHA256(password+salt)
+    // let's create SHA256(salt+password)
     hash := sha256.New()
-    hash.Write(password)
     hash.Write(salt)
+    hash.Write(password)
 
     // this is here just for demo purposes
     //
@@ -117,7 +117,6 @@ func main() {
 However, this approach has several flaws and should not be used. It is shown
 here only to illustrate the theory with a practical example. The next section
 explains how to correctly salt passwords in real life.
-
 
 ## Storing password securely: the practice
 
