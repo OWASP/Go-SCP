@@ -71,12 +71,11 @@ The ones below are some of the most popular third-party logging packages:
 * [glog][2]   - https://github.com/golang/glog
 * [loggo][3]  - https://github.com/juju/loggo
 
-Here's an important note regarding [Go's log package][0]: both Fatal and Panic
-functions do much more than logging. Panic functions call `panic` after writing
-the log message. What is not generally accepted for libraries and Fatal
-functions call `os.Exit(1)` after writing the log message that may terminate the
-program preventing deferred statements to run, buffers to be flushed, and/or
-temporary data to be removed.
+Here's an important note regarding [Go's log package][0]: Fatal and Panic
+functions have different behaviors after logging: Panic functions call `panic`
+but Fatal functions call `os.Exit(1)` that **may terminate the program
+preventing deferred statements to run, buffers to be flushed, and/or temporary
+data to be removed**.
 
 ---
 
