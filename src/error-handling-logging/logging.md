@@ -98,14 +98,14 @@ tampering has taken place.
 logChecksum, err := ioutil.ReadFile("log/checksum")
 str := string(logChecksum) // convert content to a 'string'
 
-// Compute our current log's MD5
-b, err := ComputeMd5("log/log")
+// Compute our current log's SHA256 hash
+b, err := ComputeSHA256("log/log")
 if err != nil {
   fmt.Printf("Err: %v", err)
 } else {
-  md5Result := hex.EncodeToString(b)
+  hash := hex.EncodeToString(b)
   // Compare our calculated hash with our stored hash
-  if str == md5Result {
+  if str == hash {
     // Ok the checksums match.
     fmt.Println("Log integrity OK.")
   } else {
@@ -116,13 +116,13 @@ if err != nil {
 {...}
 ```
 
-Note: The `ComputeMD5()` function calculates a file's MD5. It's also important
-to note that the log-file hashes must be stored in a safe place, and compared
-with the current log hash to verify integrity before any updates to the log.
-Full source is included in the document.
-
+Note: The `ComputeSHA256()` function calculates a file's SHA256. It's also
+important to note that the log-file hashes must be stored in a safe place, and
+compared with the current log hash to verify integrity before any updates to the
+log. [Working demo available in the repository][4].
 
 [0]: https://golang.org/pkg/log/
 [1]: https://github.com/Sirupsen/logrus
 [2]: https://github.com/golang/glog
 [3]: https://github.com/juju/loggo
+[4]: ./assets/log-integrity.go
