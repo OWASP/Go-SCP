@@ -10,7 +10,7 @@ Of course, this is not guaranteed to happen. But in the case of such an event,
 collateral damages can be avoided if authentication data, especially passwords,
 are stored properly.
 
-First, let's be it clear that "_all authentication controls should fail
+First, let's be clear that "_all authentication controls should fail
 securely_". We recommend you read all other "Authentication and Password
 Management" sections, since they cover recommendations about reporting back
 wrong authentication data and how to handle logging.
