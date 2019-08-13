@@ -52,7 +52,7 @@ panic: runtime error: index out of range
 When our application uses resources, additional checks must also be made to
 ensure they have been closed, and not rely solely on the Garbage Collector.
 This is applicable when dealing with connection objects, file handles, etc.
-In Go we can use `Defer` to perform these actions. Instructions in `Defer` are
+In Go we can use `defer` to perform these actions. Instructions in `defer` are
 only executed when the surrounding functions finish execution.
 
 ```go
@@ -61,7 +61,7 @@ defer func() {
 }
 ```
 
-More information regarding `Defer` can be found in the [Error Handling][3]
+More information regarding `defer` can be found in the [Error Handling][3]
 section of the document.
 
 Usage of functions that are known to be vulnerable should also be avoided. In
