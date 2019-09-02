@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+  build:
+    build: .
+    image: go-scp:latest
+    entrypoint: bash -c "npm i && node_modules/.bin/gitbook install && npm run build; rm -rf node_modules"
+    network_mode: host
+    volumes:
+      - .:/build
+

@@ -106,18 +106,17 @@ The shell output will include a `localhost` URL where you can preview the book.
 
 ## How to Build
 
-The book can be compile:
+If you have `node` installed, you can run:
 
-1. Using a Docker container (requires [docker][16] to be installed)
-   ```
-   $ [ ! -z $(docker images -q goscp-builder) ] || docker build -t goscp-builder . \
-       && docker run -v $(pwd):/build --rm goscp-builder npm run build
-   ```
-2. in your workstation, running (requires [node][17] and [calibre][18] to be
-   installed)
-   ```
-   $ npm run build
-   ```
+```
+$ npm i && node_modules/.bin/gitbook install && npm run build
+```
+
+You can also build the book using an ephemeral Docker container:
+
+```
+$ docker-compose run -u node:node --rm build
+```
 
 [1]: https://git-scm.com
 [2]: https://gogs.io

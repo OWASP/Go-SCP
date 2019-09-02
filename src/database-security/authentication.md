@@ -10,8 +10,7 @@ Always adjust the database user according to your web applications needs.
 ## Use a strong password
 
 When creating your database access, choose a strong password. You can use
-password managers to generate a strong password, or use online web applications
-that do the same for you - [Strong Password Generator][1].
+password managers to generate a strong password.
 
 ## Remove default admin passwords
 

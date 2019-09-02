@@ -25,6 +25,12 @@ BLAKE2) and [BLAKE2s][6] implementations: the former is optimized for 64-bit
 platforms and the latter for 8-bit to 32-bit platforms. If BLAKE2 is
 unavailable, SHA-256 is the right option.
 
+Please not that slowness is something desired on a cryptographic hashing
+algorithm. Computers become faster over time, meaning that attacker can try more
+and more potential passwords as years pass (see [Credential Stuffing][7] and
+[Brute-force attacks][8]). To fight back, the hashing function should be
+_inherently slow_, using at least 10,000 iterations.
+
 Whenever you have something that you don't need to know what it is, but only if
 it's _what it's supposed to be_ (like checking file integrity after download),
 you should use hashing[^2]
@@ -180,4 +186,5 @@ instead of the implementations in the [`crypto/*` package][1].
 [4]: https://blake2.net/
 [5]: https://godoc.org/golang.org/x/crypto/blake2b
 [6]: https://godoc.org/golang.org/x/crypto/blake2s
-
+[7]: https://www.owasp.org/index.php/Credential_stuffing
+[8]: https://www.owasp.org/index.php/Brute_force_attack

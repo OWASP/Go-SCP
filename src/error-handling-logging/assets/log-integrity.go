@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"io"
@@ -17,11 +17,11 @@ func main() {
 
 	str := string(logChecksum) // convert content to a 'string'
 
-	if b, err := ComputeMd5("log/log"); err != nil {
+	if b, err := ComputeSHA256("log/log"); err != nil {
 		fmt.Printf("Err: %v", err)
 	} else {
-		md5Result := hex.EncodeToString(b)
-		if str == md5Result {
+		hash := hex.EncodeToString(b)
+		if str == hash {
 			fmt.Println("Log integrity OK.")
 		} else {
 			fmt.Println("File Tampering detected.")
@@ -29,7 +29,7 @@ func main() {
 	}
 }
 
-func ComputeMd5(filePath string) ([]byte, error) {
+func ComputeSHA256(filePath string) ([]byte, error) {
 	var result []byte
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -37,7 +37,7 @@ func ComputeMd5(filePath string) ([]byte, error) {
 	}
 	defer file.Close()
 
-	hash := md5.New()
+	hash := sha256.New()
 	if _, err := io.Copy(hash, file); err != nil {
 		return result, err
 	}

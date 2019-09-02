@@ -11,7 +11,7 @@ attacker to intercept and read the traffic in these channels.
 
 The scope of this section covers the following communication channels:
 
-* HTTP/TLS
+* HTTP/HTTPS
 * Websockets
 
 [1]: https://www.owasp.org/index.php/Man-in-the-middle_attack

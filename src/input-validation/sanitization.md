@@ -14,8 +14,9 @@ In the native package `html` there are two functions used for sanitization:
 one for escaping HTML text and another for unescaping HTML.
 The function `EscapeString()`, accepts a string and returns the same string
 with the special characters escaped. i.e. `<` becomes `&lt;`.
-Note that this function only escapes the following five characters: `<`, `>`,
-`&`, `'` and `"`.
+Note that **this function only escapes the following five characters: `<`, `>`,
+`&`, `'` and `"`**. Other characters should be encoded manually, or, you can use
+a third party library that encodes all relevant characters.
 Conversely there is also the `UnescapeString()` function to convert from
 entities to characters.
 

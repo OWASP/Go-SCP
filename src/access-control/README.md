@@ -29,7 +29,7 @@ The component used for access authorization should be a single one, used
 site-wide. This includes libraries that call external authorization services.
 
 In case of a failure, access control should fail securely. In Go we can use
-`Defer` to achieve this.
+`defer` to achieve this.
 There are more details in the [Error Logging][1] section of this document.
 
 If the application cannot access its configuration information, all

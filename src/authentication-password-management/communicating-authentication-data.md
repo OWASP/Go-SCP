@@ -14,13 +14,14 @@ setting the `autocomplete` attribute to `off`[^1].
 <input type="password" name="passwd" autocomplete="off" />
 ```
 
-Authentication credentials should be sent on HTTP POST requests only, using an
-encrypted connection (HTTPS). An exception to the encrypted connection may be
-the temporary passwords associated with email resets.
+Authentication credentials should be sent only through encrypted connections
+(HTTPS). An exception to the encrypted connection may be the temporary passwords
+associated with email resets.
 
-Although HTTP GET requests over TLS/SSL (HTTPS) look as secure as HTTP POST
-requests, remember that in general, HTTP servers (eg. Apache[^2], Nginx[^3]) do
-write the requested URL to the access log.
+Remember that requested URLs are usually logged by the HTTP server
+(`access_log`), which include the query string. To prevent authentication
+credentials leakage to HTTP server logs, data should be sent to the server using
+the HTTP `POST` method.
 
 ```text
 xxx.xxx.xxx.xxx - - [27/Feb/2017:01:55:09 +0000] "GET /?username=user&password=70pS3cure/oassw0rd HTTP/1.1" 200 235 "-" "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:51.0) Gecko/20100101 Firefox/51.0"
