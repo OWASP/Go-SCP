@@ -43,17 +43,7 @@ mistakes and pitfalls.
 After reading this book, you'll be more confident you're developing secure Go
 applications.
 
-## About Checkmarx
 
-[Checkmarx][2] is an Application Security software company, whose mission is to
-provide enterprise organizations with application security testing products
-and services that empower developers to deliver secure applications. Amongst
-the company's 1,000 customers are five of the world's top 10 software vendors,
-four of the top American banks, and many Fortune 500 and government
-organizations, including SAP, Samsung and Salesforce.com.
-
-For more information about Checkmarx, visit [checkmarx.com][2] or follow us on
-Twitter: [@checkmarx][7]
 
 ## About OWASP Secure Coding Practices
 
