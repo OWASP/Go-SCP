@@ -211,12 +211,17 @@ if bcrypt.CompareHashAndPassword(password, []byte(expectedPassword)) != nil {
 }
  ```
 
+If you're not comfortable with password hashing and comparison
+options/parameters, better delegating the task to specialized third-party
+package with safe defaults. Always opt for an actively maintained package and
+remind to check for known issues.
+
+* [passwd][6] - A Go package that provides a safe default abstraction for
+  password hashing and comparison. It has support for original go bcrypt
+  implementation, argon2, scrypt, parameters masking and key'ed (uncrackable)
+  hashes.
+
 [^1]: Hashing functions are the subject of Collisions but recommended hashing functions have a really low collisions probability
-
-Third-party package(s) exists that handle secure password hashing/compare for password storage in Go:
-
-* [passwd][6] - A Go package that provides a safe default abstraction for password hashing & comparison.
-  It has support for original go bcrypt implementation, argon2, scrypt, parameters masking and key'ed (uncrackable) hashes. 
 
 [1]: /cryptographic-practices/pseudo-random-generators.md
 [2]: https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet
