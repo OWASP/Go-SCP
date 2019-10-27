@@ -38,7 +38,7 @@ func main() {
     switch RoleLevel {
     case 1:
         // Log successful login
-        logger.Printf("Login successfull.")
+        logger.Printf("Login successful.")
         fmt.Print(&buf)
     case 2:
         // Log unsuccessful Login

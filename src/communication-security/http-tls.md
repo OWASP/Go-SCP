@@ -2,7 +2,7 @@ HTTP/TLS
 =========
 
 `TLS/SSL` is a cryptographic protocol that allows encryption over otherwise
-unsecure communication channels. The most common usage of TLS/SSL is to provide
+insecure communication channels. The most common usage of TLS/SSL is to provide
 secure `HTTP` communication, also known as `HTTPS`. The protocol ensures that
 the following properties apply to the communication channel:
 
