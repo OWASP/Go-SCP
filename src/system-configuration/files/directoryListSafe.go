@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
 )
@@ -27,5 +28,8 @@ func (f neuteredReaddirFile) Readdir(count int) ([]os.FileInfo, error) {
 
 func main() {
 	fs := justFilesFilesystem{http.Dir("tmp/static/")}
-	http.ListenAndServe(":8080", http.StripPrefix("/tmp/static", http.FileServer(fs)))
+	err := http.ListenAndServe(":8080", http.StripPrefix("/tmp/static", http.FileServer(fs)))
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }

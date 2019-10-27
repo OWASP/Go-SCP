@@ -40,5 +40,4 @@ func main() {
 	default:
 		fmt.Println("unknown file type uploaded")
 	}
-
 }
