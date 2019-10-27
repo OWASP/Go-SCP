@@ -26,7 +26,6 @@ func Homepage(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(res, "<a href=\"login\"> Login </a> <br>")
 	fmt.Fprintf(res, "<a href=\"profile?page=page2\"> URL Parameters page 2 - Protected </a> <br>")
 	fmt.Fprintf(res, "<a href=\"profile\"> Profile - Protected </a> <br>")
-
 }
 
 // create a JWT and put in the clients cookie
@@ -59,8 +58,7 @@ func setToken(res http.ResponseWriter, req *http.Request) {
 
 // middleware to protect private pages
 func validate(page http.HandlerFunc) http.HandlerFunc {
-	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-
+	return func(res http.ResponseWriter, req *http.Request) {
 		cookie, err := req.Cookie("Auth")
 		if err != nil {
 			res.Header().Set("Content-Type", "text/html")
@@ -91,7 +89,7 @@ func validate(page http.HandlerFunc) http.HandlerFunc {
 			fmt.Fprintf(res, "<a href=\"login\"> Login </a>")
 			return
 		}
-	})
+	}
 }
 
 // only viewable if the client has a valid token
@@ -114,14 +112,12 @@ func protectedProfile(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprintf(res, "Hello %s <br>", claims.Username)
 		fmt.Fprintf(res, "<a href=\"logout\"> Logout </a>")
 	}
-
 }
 
 // deletes the cookie
 func logout(res http.ResponseWriter, req *http.Request) {
 	deleteCookie := http.Cookie{Name: "Auth", Value: "none", Expires: time.Now()}
 	http.SetCookie(res, &deleteCookie)
-	return
 }
 
 func main() {
