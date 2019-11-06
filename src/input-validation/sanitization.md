@@ -89,9 +89,13 @@ func main() {
 }
 ```
 
-**NOTE**: Keep in mind that `ServeMux` [doesn't change][2] the URL request path for `CONNECT` requests, thus possibly making an application [vulnerable for path traversal attacks][3] if allowed request methods are not limited.
+**NOTE**: Keep in mind that `ServeMux` [doesn't change][2] the URL request path
+for `CONNECT` requests, thus possibly making an application [vulnerable for path
+traversal attacks][3] if allowed request methods are not limited.
 
-Third-party packages:
+The following third-party packages are alternatives to the native HTTP request
+multiplexer, providing additional features. Always choose well tested and
+actively maintained packages.
 
 * [Gorilla Toolkit - MUX][1]
 
