@@ -228,4 +228,4 @@ remind to check for known issues.
 [3]: https://godoc.org/golang.org/x/crypto/bcrypt
 [4]: https://github.com/p-h-c/phc-winner-argon2
 [5]: https://godoc.org/golang.org/x/crypto/pbkdf2
-[6]: https://git.sr.ht/~eau/passwd
+[6]: https://github.com/ermites-io/passwd
