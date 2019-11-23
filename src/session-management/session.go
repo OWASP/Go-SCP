@@ -51,7 +51,7 @@ func setToken(res http.ResponseWriter, req *http.Request) {
 	}
 
 	http.SetCookie(res, &cookie)
-	http.Redirect(res, req, "/profile", 307)
+	http.Redirect(res, req, "/profile", http.StatusTemporaryRedirect)
 }
 
 // middleware to protect private pages
