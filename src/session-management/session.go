@@ -51,7 +51,7 @@ func setToken(res http.ResponseWriter, req *http.Request) {
 	}
 
 	http.SetCookie(res, &cookie)
-	http.Redirect(res, req, "/profile", 307)
+	http.Redirect(res, req, "/profile", http.StatusTemporaryRedirect)
 }
 
 // middleware to protect private pages
@@ -68,7 +68,7 @@ func validate(page http.HandlerFunc) http.HandlerFunc {
 		token, err := jwt.ParseWithClaims(cookie.Value, &Claims{},
 			func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, fmt.Errorf("Unexpected signing method")
+					return nil, fmt.Errorf("unexpected signing method")
 				}
 				return []byte("secret"), nil
 			},
