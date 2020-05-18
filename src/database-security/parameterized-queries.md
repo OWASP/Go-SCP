@@ -43,5 +43,5 @@ reasons for this:
   (See: [Input Validation][1] and [Output Encoding][2]), so performance
   as seen above is undesired.
 
-[1]: /input-validation/README.md
-[2]: /output-encoding/README.md
+[1]: ../input-validation/README.md
+[2]: ../output-encoding/README.md
