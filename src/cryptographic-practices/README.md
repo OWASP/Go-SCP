@@ -182,7 +182,7 @@ instead of the implementations in the [`crypto/*` package][1].
 
 [1]: https://golang.org/pkg/crypto/
 [2]: https://golang.org/pkg/crypto/md5/
-[3]: /authentication-password-management.html
+[3]: ../authentication-password-management.html
 [4]: https://blake2.net/
 [5]: https://godoc.org/golang.org/x/crypto/blake2b
 [6]: https://godoc.org/golang.org/x/crypto/blake2s
