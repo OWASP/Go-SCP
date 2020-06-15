@@ -223,7 +223,7 @@ remind to check for known issues.
 
 [^1]: Hashing functions are the subject of Collisions but recommended hashing functions have a really low collisions probability
 
-[1]: /cryptographic-practices/pseudo-random-generators.md
+[1]: ../cryptographic-practices/pseudo-random-generators.md
 [2]: https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet
 [3]: https://godoc.org/golang.org/x/crypto/bcrypt
 [4]: https://github.com/p-h-c/phc-winner-argon2

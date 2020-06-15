@@ -91,6 +91,6 @@ When supporting external service accounts and accounts that support connections
 _from_ or _to_ external systems, these accounts must use the lowest level
 privilege possible.
 
-[1]: /error-handling-logging/error-handling.md
+[1]: ../error-handling-logging/error-handling.md
 [2]: URL.go
-[3]: /session-management/README.md
+[3]: ../session-management/README.md

@@ -26,7 +26,7 @@ The primary thing to perform is to define the right role for each user - web or
 system.
 
 Role separation and access controls are further discussed in
-the [Access Control][1] section.
+the [Access Control][5] section.
 
 ## Remove sensitive information
 
@@ -211,5 +211,6 @@ The `Pragma` header is there to support HTTP/1.0 requests.
 
 [1]: https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
 [2]: https://godoc.org/golang.org/x/crypto
-[3]: /cryptographic-practices/README.md
-[4]: /database-security/README.md
+[3]: ../cryptographic-practices/README.md
+[4]: ../database-security/README.md
+[5]: ../access-control/README.md
