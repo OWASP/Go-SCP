@@ -1,5 +1,12 @@
 {
     "author": "Checkmarx Security Research Team",
     "language": "en_US",
-    "root": "./src"
+    "root": "./src",
+    "pdf": {
+        "paperSize": "a4",
+        "margin": {
+            "left": 2,
+            "right": 2
+        }
+    }
 }
