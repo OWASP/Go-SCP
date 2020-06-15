@@ -39,7 +39,7 @@ This basically can be adapted to any programming language when using databases.
 [1]: https://golang.org/pkg/database/sql/
 [2]: https://github.com/go-sql-driver/mysql
 [3]: https://github.com/mattn/go-sqlite3
-[4]: /input-validation/README.md
-[5]: /output-encoding/README.md
+[4]: ../input-validation/README.md
+[5]: ../output-encoding/README.md
 [6]: https://dev.mysql.com/doc/refman/5.7/en/mysql-secure-installation.html
 [7]: https://mariadb.com/kb/en/mariadb/mysql_secure_installation/

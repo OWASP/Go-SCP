@@ -81,6 +81,6 @@ Quoting [Golang's Github](https://github.com/golang/go/issues/13761):
 > Disabling GC for extended period of time is generally a bad solution for a
 > concurrent language like Go. And Go's GC will only be better down the road.
 
-[1]: /input-validation/README.md
-[2]: /output-encoding/README.md
-[3]: /error-handling-logging/README.md
+[1]: ../input-validation/README.md
+[2]: ../output-encoding/README.md
+[3]: ../error-handling-logging/README.md
