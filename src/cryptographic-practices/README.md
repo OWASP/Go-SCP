@@ -25,7 +25,7 @@ BLAKE2) and [BLAKE2s][6] implementations: the former is optimized for 64-bit
 platforms and the latter for 8-bit to 32-bit platforms. If BLAKE2 is
 unavailable, SHA-256 is the right option.
 
-Please not that slowness is something desired on a cryptographic hashing
+Please note that slowness is something desired on a cryptographic hashing
 algorithm. Computers become faster over time, meaning that attacker can try more
 and more potential passwords as years pass (see [Credential Stuffing][7] and
 [Brute-force attacks][8]). To fight back, the hashing function should be
