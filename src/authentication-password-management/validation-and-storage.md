@@ -93,20 +93,21 @@ func main() {
     hash := sha256.New()
     hash.Write(salt)
     hash.Write(password)
+    h := hash.Sum(nil)
 
     // this is here just for demo purposes
     //
     // fmt.Printf("email   : %s\n", string(email))
     // fmt.Printf("password: %s\n", string(password))
     // fmt.Printf("salt    : %x\n", salt)
-    // fmt.Printf("hash    : %x\n", hash.Sum(nil))
+    // fmt.Printf("hash    : %x\n", h)
 
     // you're supposed to have a database connection
     stmt, err := db.PrepareContext(ctx, "INSERT INTO accounts SET hash=?, salt=?, email=?")
     if err != nil {
         panic(err)
     }
-    result, err := stmt.ExecContext(ctx, email, h, salt)
+    result, err := stmt.ExecContext(ctx, h, salt, email)
     if err != nil {
         panic(err)
     }
