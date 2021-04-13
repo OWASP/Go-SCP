@@ -175,6 +175,109 @@ Most modern cryptographic algorithms have been implemented under
 https://godoc.org/golang.org/x/crypto, so developers should focus on those
 instead of the implementations in the [`crypto/*` package][1].
 
+Although the example above works fine, you can use the version below which
+tries to serve the same purpose, but by decoupling responsibilities such as
+encryption, decryption and secret generation. The `secret` method below is a
+convenient option which helps generate a secret. It is currently defaulted
+to return a [AES-256][9] (*256 bits/32 bytes*) based key.
+
+**Note**: This piece of code originates from [inanzzz.com][10] but has been
+slighlty modified.
+
+
+```go
+package main
+
+import (
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"fmt"
+	"io"
+)
+
+func encrypt(val []byte, secret []byte) ([]byte, error) {
+	block, err := aes.NewCipher(secret)
+	if err != nil {
+		return nil, err
+	}
+
+	aead, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, err
+	}
+
+	nonce := make([]byte, aead.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		return nil, err
+	}
+
+	return aead.Seal(nonce, nonce, val, nil), nil
+}
+
+func decrypt(val []byte, secret []byte) ([]byte, error) {
+	block, err := aes.NewCipher(secret)
+	if err != nil {
+		return nil, err
+	}
+
+	aead, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, err
+	}
+
+	size := aead.NonceSize()
+	if len(val) < size {
+		return nil, err
+	}
+
+	result, err := aead.Open(nil, val[:size], val[size:], nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func secret() ([]byte, error) {
+	key := make([]byte, 16)
+
+	if _, err := rand.Read(key); err != nil {
+		return nil, err
+	}
+
+	return key, nil
+}
+
+func main() {
+	secret, err := secret()
+	if err != nil {
+		panic(fmt.Sprintf("unable to create secret key: %v", err))
+	}
+
+	message := []byte("Welcome to Go Language Secure Coding Practices")
+	fmt.Printf("Message  : %s\n", message)
+
+	encrypted, err := encrypt(message, secret)
+	if err != nil {
+		panic(fmt.Sprintf("unable to encrypt the data: %v", err))
+	}
+	fmt.Printf("Encrypted: %x\n", encrypted)
+
+	decrypted, err := decrypt(encrypted, secret)
+	if err != nil {
+		panic(fmt.Sprintf("unable to decrypt the data: %v", err))
+	}
+	fmt.Printf("Decrypted: %s\n", decrypted)
+}
+```
+
+```bash
+Message  : Welcome to Go Language Secure Coding Practices
+Encrypted: b46fcd10657f3c269844da5f824511a0e3da987211bc23e82a9c050a2be287f51bb41dd3546742442498ae9fcad2ce40d88625d1840c11096a55cb4f217382befbeb636e479cfecfcd3a
+Decrypted: Welcome to Go Language Secure Coding Practices
+```
+
 ---
 
 [^1]: Rainbow table attacks are not a weakness on the hashing algorithms.
@@ -188,3 +291,5 @@ instead of the implementations in the [`crypto/*` package][1].
 [6]: https://godoc.org/golang.org/x/crypto/blake2s
 [7]: https://www.owasp.org/index.php/Credential_stuffing
 [8]: https://www.owasp.org/index.php/Brute_force_attack
+[9]: https://en.wikipedia.org/wiki/Advanced_Encryption_Standard
+[10]: http://www.inanzzz.com/index.php/post/f3pe/data-encryption-and-decryption-with-a-secret-key-in-golang
