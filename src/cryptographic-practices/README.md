@@ -192,8 +192,8 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"fmt"
 	"io"
+	"log"
 )
 
 func encrypt(val []byte, secret []byte) ([]byte, error) {
@@ -252,23 +252,23 @@ func secret() ([]byte, error) {
 func main() {
 	secret, err := secret()
 	if err != nil {
-		panic(fmt.Sprintf("unable to create secret key: %v", err))
+		log.Fatalf("unable to create secret key: %v", err)
 	}
 
 	message := []byte("Welcome to Go Language Secure Coding Practices")
-	fmt.Printf("Message  : %s\n", message)
+	log.Printf("Message  : %s\n", message)
 
 	encrypted, err := encrypt(message, secret)
 	if err != nil {
-		panic(fmt.Sprintf("unable to encrypt the data: %v", err))
+		log.Fatalf("unable to encrypt the data: %v", err)
 	}
-	fmt.Printf("Encrypted: %x\n", encrypted)
+	log.Printf("Encrypted: %x\n", encrypted)
 
 	decrypted, err := decrypt(encrypted, secret)
 	if err != nil {
-		panic(fmt.Sprintf("unable to decrypt the data: %v", err))
+		log.Fatalf("unable to decrypt the data: %v", err)
 	}
-	fmt.Printf("Decrypted: %s\n", decrypted)
+	log.Printf("Decrypted: %s\n", decrypted)
 }
 ```
 
