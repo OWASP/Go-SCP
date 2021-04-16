@@ -1,4 +1,4 @@
-FROM node:slim
+FROM node:12.11.1-slim
 
 RUN apt-get update
 RUN apt-get install -y python xdg-utils wget xz-utils git libnss3
