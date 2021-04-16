@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "description": "Go Web Applications Secure Coding Practices",
   "main": "index.js",
-  "dependencies": {},
   "devDependencies": {
     "gitbook-cli": "^2.3.2"
   },
