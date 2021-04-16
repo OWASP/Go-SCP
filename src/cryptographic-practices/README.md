@@ -119,47 +119,102 @@ abstractions for sending encrypted messages for the two most common use-cases:
 It is very advisable to use one of these abstractions instead of direct use of
 AES, if they fit your use-case.
 
+The example below illustrates encryption and decryption using an [AES-256][9]
+(*256 bits/32 bytes*) based key, with a clear separation of concerns such as
+encryption, decryption and secret generation. The `secret` method is a
+convenient option which helps generate a secret. The source code sample was
+taken from [here][10] but has been slightly modified.
+
 ```go
 package main
 
-import "fmt"
-import "crypto/aes"
-import "crypto/cipher"
-import "crypto/rand"
+import (
+    "crypto/aes"
+    "crypto/cipher"
+    "crypto/rand"
+    "io"
+    "log"
+)
+
+func encrypt(val []byte, secret []byte) ([]byte, error) {
+    block, err := aes.NewCipher(secret)
+    if err != nil {
+        return nil, err
+    }
+
+    aead, err := cipher.NewGCM(block)
+    if err != nil {
+        return nil, err
+    }
+
+    nonce := make([]byte, aead.NonceSize())
+    if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+        return nil, err
+    }
+
+    return aead.Seal(nonce, nonce, val, nil), nil
+}
+
+func decrypt(val []byte, secret []byte) ([]byte, error) {
+    block, err := aes.NewCipher(secret)
+    if err != nil {
+        return nil, err
+    }
+
+    aead, err := cipher.NewGCM(block)
+    if err != nil {
+        return nil, err
+    }
+
+    size := aead.NonceSize()
+    if len(val) < size {
+        return nil, err
+    }
+
+    result, err := aead.Open(nil, val[:size], val[size:], nil)
+    if err != nil {
+        return nil, err
+    }
+
+    return result, nil
+}
+
+func secret() ([]byte, error) {
+    key := make([]byte, 16)
+
+    if _, err := rand.Read(key); err != nil {
+        return nil, err
+    }
+
+    return key, nil
+}
 
 func main() {
-        key := []byte("Encryption Key should be 32 char")
-        data := []byte("Welcome to Go Language Secure Coding Practices")
+    secret, err := secret()
+    if err != nil {
+        log.Fatalf("unable to create secret key: %v", err)
+    }
 
-        block, err := aes.NewCipher(key)
-        if err != nil {
-                panic(err.Error())
-        }
+    message := []byte("Welcome to Go Language Secure Coding Practices")
+    log.Printf("Message  : %s\n", message)
 
-        nonce := make([]byte, 12)
-        if _, err := rand.Read(nonce); err != nil {
-                panic(err.Error())
-        }
+    encrypted, err := encrypt(message, secret)
+    if err != nil {
+        log.Fatalf("unable to encrypt the data: %v", err)
+    }
+    log.Printf("Encrypted: %x\n", encrypted)
 
-        aesgcm, err := cipher.NewGCM(block)
-        if err != nil {
-                panic(err.Error())
-        }
-
-        encrypted_data := aesgcm.Seal(nil, nonce, data, nil)
-        fmt.Printf("Encrypted: %x\n", encrypted_data)
-
-        decrypted_data, err := aesgcm.Open(nil, nonce, encrypted_data, nil)
-        if err != nil {
-                panic(err.Error())
-        }
-
-        fmt.Printf("Decrypted: %s\n", decrypted_data)
+    decrypted, err := decrypt(encrypted, secret)
+    if err != nil {
+        log.Fatalf("unable to decrypt the data: %v", err)
+    }
+    log.Printf("Decrypted: %s\n", decrypted)
 }
 ```
 
-```
-Encrypted: a66bd44db1fac7281c33f6ca40494a320644584d0595e5a0e9a202f8aeb22dae659dc06932d4e409fe35a95d14b1cffacbe3914460dd27cbd274b0c3a561
+```bash
+Message  : Welcome to Go Language Secure Coding Practices
+Encrypted: b46fcd10657f3c269844da5f824511a0e3da987211bc23e82a9c050a2be287f51bb41dd3546742442498ae9fcad2ce40d88625d1840c11096a55cb4f217382befbeb636e479cfecfcd3a
 Decrypted: Welcome to Go Language Secure Coding Practices
 ```
 
@@ -188,3 +243,5 @@ instead of the implementations in the [`crypto/*` package][1].
 [6]: https://godoc.org/golang.org/x/crypto/blake2s
 [7]: https://www.owasp.org/index.php/Credential_stuffing
 [8]: https://www.owasp.org/index.php/Brute_force_attack
+[9]: https://en.wikipedia.org/wiki/Advanced_Encryption_Standard
+[10]: http://www.inanzzz.com/index.php/post/f3pe/data-encryption-and-decryption-with-a-secret-key-in-golang
