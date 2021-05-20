@@ -124,7 +124,7 @@ Some examples of the possible usage of `log.Fatal` are:
 To demonstrate, here's an example of an initialization failure:
 
 ```go
-func init(i int) {
+func initialize(i int) {
     ...
     //This is just to deliberately crash the function.
     if i < 2 {
@@ -138,10 +138,11 @@ func init(i int) {
 func main() {
     i := 1
     for i < 3 {
-        init(i)
+        initialize(i)
         i++
     }
     fmt.Println("Initialized all variables successfully")
+}
 ```
 
 It's important to assure that in case of an error associated with the security
