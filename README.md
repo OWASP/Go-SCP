@@ -64,7 +64,7 @@ make clear to others the license terms of this work.
 
 [1]: https://golang.org
 [2]: http://chkmrx.co/2sffXFr
-[3]: https://www.owasp.org/index.php/OWASP_Secure_Coding_Practices_-_Quick_Reference_Guide
+[3]: https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/migrated_content
 [4]: https://www.owasp.org
 [5]: https://www.owasp.org/index.php/About_OWASP
 [6]: src/howto-contribute.md
