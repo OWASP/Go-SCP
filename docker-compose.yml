@@ -3,8 +3,7 @@ services:
   build:
     build: .
     image: go-scp:latest
-    entrypoint: bash -c "npm i && node_modules/.bin/gitbook install && npm run build; rm -rf node_modules"
+    entrypoint: bash -c "npm run build"
     network_mode: host
     volumes:
       - .:/build
-
