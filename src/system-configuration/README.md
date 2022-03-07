@@ -189,5 +189,5 @@ A more in-depth analysis of this implementation can be found [here][5].
 [1]: https://www.owasp.org/index.php/Least_privilege
 [2]: https://godoc.org/golang.org/x/net/webdav
 [3]: https://golang.org/pkg/net/http/#Request
-[4]: https://www.owasp.org/index.php/OWASP_Periodic_Table_of_Vulnerabilities_-_Directory_Indexingi
-[5]: https://www.giac.org/paper/gsec/2693/implementation-methodology-information-security-management-system-to-comply-bs-7799-requi/104600)
+[4]: https://www.owasp.org/index.php/OWASP_Periodic_Table_of_Vulnerabilities_-_Directory_Indexing
+[5]: https://www.giac.org/paper/gsec/2693/implementation-methodology-information-security-management-system-to-comply-bs-7799-requi/104600
