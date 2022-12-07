@@ -83,7 +83,7 @@ Quoting [Golang's Github](https://github.com/golang/go/issues/13761):
 
 [1]: ../input-validation/README.md
 [2]: ../output-encoding/README.md
-[3]: ../error-handling-logging/README.
+[3]: ../error-handling-logging/README.md
 
 ## Memory Leaking Scenarios
 Even though go is a memory-safe language. The go compiler has been written in a way that can cause it to kind-of memory leaking issues sometimes. Since memory leaking is one of the ways using which an attacker can launch attacks like DDoS, one needs to be aware of recommended practices to prevent writing programs that can lead to memory leaking.Let's look at some of the scenarios.
@@ -204,7 +204,7 @@ func multiFileWrites(fileList []FileDetails) error {
 }
 ```
 
-So, the solution in such cases is to use an anonymous function that will enclose the deferred calls to make them execute relatively earlier.
+So, the solution in such cases is to use an anonymous function that will enclose the deferred calls to make them execute relatively earlier rather than waiting till all the files have been processed.
 
 ```go
 func memoryEfficientMultipleFileWrites(fileList []FileDetails) error {
