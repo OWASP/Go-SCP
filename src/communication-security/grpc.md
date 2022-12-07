@@ -92,7 +92,7 @@ func main() {
 
 ```
 
-**Important** : As mentioned in the previous sections that the TLS certificates should be valid, should not be expired and should be installed with intermediate certificates when required as recommended in OWASP SCP Quick
+**Important** : As mentioned in the previous sections that the TLS certificates should be valid, should not be expired and should be installed with intermediate certificates when required as recommended in [OWASP SCP Quick
 Reference Guide][4]. 
 Also, an ideal gRPC client should avoid connecting to a gRPC server which is missing or has invalid certificates. The `InsecureSkipVerify` flag should never be set to false for services deployed in production.
 
