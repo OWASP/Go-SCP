@@ -120,7 +120,7 @@ func customizedSubstring(paramStr string) {
 }
 ```
 
-# Concatenation
+## Concatenation
 ```go
 func customizedSubstring(paramStr string) {
 	strSlice = (" " + paramStr[:100][:1])
@@ -131,7 +131,7 @@ func customizedSubstring(paramStr string) {
 }
 ```
 
-# Using a string Builder
+## Using a string Builder
 ```go
 func customizedSubstring(paramStr string) {
 	var temp strings.Builder
