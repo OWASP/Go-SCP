@@ -88,7 +88,7 @@ Quoting [Golang's Github](https://github.com/golang/go/issues/13761):
 ## Memory Leaking Scenarios
 Even though go is a memory-safe language. The go compiler has been written in a way that can cause it to kind-of memory leaking issues sometimes. Since memory leaking is one of the ways using which an attacker can launch attacks like DDoS, one needs to be aware of recommended practices to prevent writing programs that can lead to memory leaking.Let's look at some of the scenarios.
 
-## Memory leak. because of substrings:
+### Memory leak because of substrings:
 For example, in the below function the memory occupied by the paramStr variable won't be garbage collected even though the function has returned as the strSlice variable is sharing the same underlying memory block.
 
 ```go
@@ -106,7 +106,7 @@ func customizedSubstring(paramStr string) {
 
 ```
 To get around such scenario, we can opt for multiple ways to efficiently copy a string, few of those are listed below:
-## Using a byte array
+#### Using a byte array
 
 ```go
 func customizedSubstring(paramStr string) {
@@ -120,7 +120,7 @@ func customizedSubstring(paramStr string) {
 }
 ```
 
-## Concatenation
+#### Concatenation
 ```go
 func customizedSubstring(paramStr string) {
 	strSlice = (" " + paramStr[:100][:1])
@@ -131,7 +131,7 @@ func customizedSubstring(paramStr string) {
 }
 ```
 
-## Using a string Builder
+#### Using a string Builder
 ```go
 func customizedSubstring(paramStr string) {
 	var temp strings.Builder
@@ -146,7 +146,7 @@ func customizedSubstring(paramStr string) {
 }
 ```
 
-## Memory Leaking with Pointers:
+### Memory Leaking with Pointers:
 Let's look at the function below. Once the function's lifespan is over, the memory reference allocated for the
 the first and the last elements of the slice will be lost.
 
@@ -173,7 +173,7 @@ func slicePointerFunc() []*string {
 }
 ```
 
-## Memory leaking because of deferred function calls:
+### Memory leaking because of deferred function calls:
 Sometimes a deferred call queue can consume significant memory and may hold on to resources which are needed by other programs/subprograms running on the system. For example, look at the below program, which writes to number of files during it's lifespan.
 Such program might hold on to the file handlers till the very end of the function, even after finishing updating those files much earlier.
 ```go
