@@ -27,7 +27,7 @@ time, who have already finish the [Go tour][8].
 
 ## What You Will Learn
 
-This book covers the [OWASP Secure Coding Practices Guide][3] topic-by-topic,
+This book covers the [OWASP Secure Coding Practices Guide][15] topic-by-topic,
 providing examples and recommendations using Go, to help developers avoid common
 mistakes and pitfalls.
 
@@ -40,7 +40,7 @@ This book was adapted for Go Language from The [Secure Coding Practices Quick
 Reference Guide][3], an [OWASP][4] - Open Web Application Security Project. It
 is a "_technology agnostic set of general software security coding practices, in
 a comprehensive checklist format, that can be integrated into the development
-lifecycle_" ([source][3]).
+lifecycle_" ([source][15]).
 
 [OWASP][4] itself is "_an open community dedicated to enabling organizations to
 conceive, develop, acquire, operate, and maintain applications that can be
@@ -64,9 +64,9 @@ make clear to others the license terms of this work.
 
 [1]: https://golang.org
 [2]: http://chkmrx.co/2sffXFr
-[3]: https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/migrated_content
-[4]: https://www.owasp.org
-[5]: https://www.owasp.org/index.php/About_OWASP
+[3]: https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/
+[4]: https://owasp.org/
+[5]: https://owasp.org/about/
 [6]: src/howto-contribute.md
 [7]: https://www.twitter.com/checkmarx
 [8]: https://www.gitbook.com/
@@ -76,3 +76,4 @@ make clear to others the license terms of this work.
 [12]: dist/go-webapp-scp.pdf
 [13]: dist/go-webapp-scp.mobi
 [14]: dist/go-webapp-scp.epub
+[15]: https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/#div-download
