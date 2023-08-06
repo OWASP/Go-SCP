@@ -65,7 +65,7 @@ If you're curious about how we built it from scratch, read the
 
 [1]: https://golang.org
 [2]: http://chkmrx.co/2sffXFr
-[3]: https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/migrated_content
+[3]: https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/
 [4]: https://www.owasp.org
 [5]: https://www.owasp.org/index.php/About_OWASP
 [6]: /howto-contribute.md
