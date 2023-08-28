@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "github.com/pypalkar23/go-rpc-cis5209/sample";
+
+package sample;
+
+
+service SampleService {
+    rpc Greet (SendMsg) returns (SendResp);
+}
+
+message SendMsg {
+    string name = 1;
+}
+
+message SendResp{
+    string message = 1;
+}
