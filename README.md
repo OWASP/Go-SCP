@@ -69,7 +69,7 @@ make clear to others the license terms of this work.
 [5]: https://owasp.org/about/
 [6]: src/howto-contribute.md
 [7]: https://www.twitter.com/checkmarx
-[8]: https://www.gitbook.com/
+[8]: https://go.dev/tour/
 [9]: https://checkmarx.gitbooks.io/go-scp/
 [10]: https://www.gitbook.com/book/checkmarx/go-scp/
 [11]: https://creativecommons.org/licenses/by-sa/4.0/
