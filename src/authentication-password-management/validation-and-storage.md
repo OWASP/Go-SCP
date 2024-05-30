@@ -203,7 +203,7 @@ if err := record.Scan(&expectedPassword); err != nil {
     // should continue
 }
 
-if bcrypt.CompareHashAndPassword(password, []byte(expectedPassword)) != nil {
+if bcrypt.CompareHashAndPassword([]byte(expectedPassword), password) != nil {
     // passwords do not match
 
     // passwords mismatch should be logged (see Error Handling and Logging)
