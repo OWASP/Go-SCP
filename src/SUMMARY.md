@@ -24,6 +24,7 @@ Summary
 * [Communication Security](communication-security/README.md)
     * [HTTP/TLS](communication-security/http-tls.md)
     * [WebSockets](communication-security/websockets.md)
+    * [gRPC](communication-security/grpc.md)
 * [System Configuration](system-configuration/README.md)
 * [Database Security](database-security/README.md)
     * [Connections](database-security/connections.md)
@@ -32,6 +33,7 @@ Summary
     * [Stored Procedures](database-security/stored-procedures.md)
 * [File Management](file-management/README.md)
 * [Memory Management](memory-management/README.md)
+* [Process Management](process-management/README.md)
 * General Coding Practices
     * [Cross-Site Request Forgery](general-coding-practices/cross-site-request-forgery.md)
     * [Regular Expressions](general-coding-practices/regular-expressions.md)
