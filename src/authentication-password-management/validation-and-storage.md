@@ -15,10 +15,9 @@ securely_". We recommend you read all other "Authentication and Password
 Management" sections, since they cover recommendations about reporting back
 wrong authentication data and how to handle logging.
 
-One other preliminary recommendation is as follow: for sequential authentication
-implementations (like Google does nowadays), validation should happen only on
-the completion of all data input, on a trusted system (e.g. the server).
+One other preliminary recommendation is as follow: for sequential authentication implementations, validation should happen only on the completion of all data input, on a trusted system (e.g. the server).
 
+Source: OWASP Secure Coding Practices Quick Reference Guide
 
 ## Storing password securely: the theory
 
