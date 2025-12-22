@@ -127,8 +127,16 @@ sensitive and complex topic. Hopefully, cryptography provides tools and
 standards reviewed and approved by experts. It is therefore important to use
 them instead of trying to re-invent the wheel.
 
-In the case of password storage, the hashing algorithms recommended by
-[OWASP][2] are [`bcrypt`][2], [`PDKDF2`][3], [`Argon2`][4] and [`scrypt`][5].
+In the case of password storage, the hashing algorithms recommended by OWASP are
+
+bcrypt, PBKDF2, Argon2 and scrypt.
+
+References:
+[1] https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+[2] https://pkg.go.dev/golang.org/x/crypto/bcrypt
+[3] https://pkg.go.dev/golang.org/x/crypto/pbkdf2
+[4] https://pkg.go.dev/golang.org/x/crypto/argon2
+[5] https://pkg.go.dev/golang.org/x/crypto/scrypt
 Those take care of hashing and salting passwords in a robust way. Go authors
 provide an extended package for cryptography, that is not part of the standard
 library. It provides robust implementations for most of the aforementioned
