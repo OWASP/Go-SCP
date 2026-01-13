@@ -90,7 +90,128 @@ the first example.
 
 Yes, you guessed it, you would be able to predict the user's password!
 
-[1]: https://golang.org/pkg/math/rand/
-[2]: https://golang.org/pkg/math/rand/#pkg-overview
-[3]: https://golang.org/pkg/math/rand/#Seed
-[4]: https://golang.org/pkg/crypto/rand/
+Go 1.22: ChaCha8Rand Improvements
+---------------------------------
+
+Go 1.22 introduced a significant security improvement: the `math/rand` package
+now uses **ChaCha8Rand**, a cryptographically-strong pseudorandom number
+generator based on the ChaCha stream cipher.
+
+### What Changed
+
+| Aspect | Pre-Go 1.22 | Go 1.22+ |
+|--------|-------------|----------|
+| Algorithm | Linear feedback shift register | ChaCha8 stream cipher |
+| Seed size | 63 bits | 256 bits |
+| Predictability | ~607 values to predict all future outputs | Cryptographically secure |
+| Default behavior | Deterministic with same seed | Random seed from crypto/rand |
+
+### Security Implications
+
+**Before Go 1.22:**
+Using `math/rand` for security-sensitive operations was a "serious security
+catastrophe" - an attacker observing output could predict all future values.
+
+**Go 1.22+:**
+Accidental use of `math/rand` instead of `crypto/rand` is now "just a mistake"
+rather than a critical vulnerability. However, `crypto/rand` is **still
+recommended** for security-sensitive operations.
+
+### Recommendations
+
+```go
+// ALWAYS use for security-sensitive operations
+import "crypto/rand"
+
+func generateToken() (string, error) {
+    b := make([]byte, 32)
+    if _, err := rand.Read(b); err != nil {
+        return "", err
+    }
+    return base64.URLEncoding.EncodeToString(b), nil
+}
+
+// OK for non-security uses (shuffling, sampling, etc.)
+import "math/rand/v2"
+
+func shuffleItems(items []Item) {
+    rand.Shuffle(len(items), func(i, j int) {
+        items[i], items[j] = items[j], items[i]
+    })
+}
+```
+
+### math/rand vs math/rand/v2
+
+Go 1.22 introduced `math/rand/v2`:
+
+```go
+// Old package (still works, uses ChaCha8 by default now)
+import "math/rand"
+
+// New package (recommended for new code)
+import "math/rand/v2"
+```
+
+The v2 package has cleaner APIs and always uses ChaCha8Rand.
+
+FIPS 140-3 Compliance (Go 1.24+)
+--------------------------------
+
+For applications in regulated environments (government, finance, healthcare),
+Go 1.24 introduced native FIPS 140-3 support.
+
+### Enabling FIPS Mode
+
+```bash
+# Build with FIPS-validated cryptography
+GOFIPS140=latest go build ./...
+
+# Or use specific validated version
+GOFIPS140=v1.0.0 go build ./...
+```
+
+### Runtime Verification
+
+```go
+import "crypto/fips140"
+
+func main() {
+    if fips140.Enabled() {
+        log.Println("Running in FIPS 140-3 compliant mode")
+    }
+}
+```
+
+### What FIPS Mode Changes
+
+- Uses FIPS-validated implementations of cryptographic algorithms
+- Restricts to approved algorithms (AES, SHA-2, ECDSA, RSA, etc.)
+- Disables non-approved algorithms
+- No cgo required - pure Go implementation
+
+### When to Use FIPS Mode
+
+- Government contracts requiring FIPS compliance
+- Financial services with regulatory requirements
+- Healthcare applications handling PHI
+- Any system requiring CMVP validation
+
+Summary: When to Use Each Package
+---------------------------------
+
+| Use Case | Package |
+|----------|---------|
+| Tokens, keys, secrets, passwords | `crypto/rand` |
+| Session IDs, CSRF tokens | `crypto/rand` |
+| Nonces, IVs for encryption | `crypto/rand` |
+| Shuffling, sampling, simulations | `math/rand/v2` |
+| Random delays, jitter | `math/rand/v2` |
+| Test data generation | `math/rand/v2` |
+
+[1]: https://pkg.go.dev/math/rand
+[2]: https://pkg.go.dev/math/rand#pkg-overview
+[3]: https://pkg.go.dev/math/rand#Seed
+[4]: https://pkg.go.dev/crypto/rand
+[5]: https://go.dev/blog/chacha8rand
+[6]: https://go.dev/doc/security/fips140
