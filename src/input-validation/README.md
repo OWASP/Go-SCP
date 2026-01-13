@@ -53,6 +53,6 @@ in Go to illustrate the issues.
         * Strip octets
         * URL request path
 
-[1]: https://www.owasp.org/images/0/08/OWASP_SCP_Quick_Reference_Guide_v2.pdf
-[2]: https://www.owasp.org/index.php/Top_10_2013-A1-Injection
-[3]: https://www.owasp.org/index.php/Top_10_2013-Top_10
+[1]: https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/
+[2]: https://owasp.org/Top10/A03_2021-Injection/
+[3]: https://owasp.org/Top10/
