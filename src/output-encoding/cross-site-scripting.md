@@ -5,9 +5,10 @@ Although most developers have heard about it, most have never tried to exploit
 a Web Application using XSS.
 
 Cross Site Scripting has been on [OWASP Top 10][0] security risks since 2003 and
-it's still a common vulnerability. The [2013 version][1] is quite detailed about
-XSS, for example: attack vectors, security weakness, technical impacts and
-business impacts.
+it's still a common vulnerability. In the [2021 Top 10][1], XSS is now part of
+the broader "Injection" category (A03:2021). The OWASP documentation is quite
+detailed about XSS, covering: attack vectors, security weakness, technical
+impacts and business impacts.
 
 In short
 
@@ -151,10 +152,10 @@ but also `param1` is properly encoded to the output media: the browser.
 [html-template-plain-text]: images/html-template-plain-text.png
 [html-template-noxss]: images/html-template-text-plain-noxss.png
 
-[0]: https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project
-[1]: https://www.owasp.org/index.php/Top_10_2013-A3-Cross-Site_Scripting_(XSS)
-[2]: https://golang.org/pkg/html/template/
-[3]: https://golang.org/pkg/net/http/
-[4]: https://golang.org/pkg/io/
-[5]: https://mimesniff.spec.whatwg.org/#rules-for-identifying-an-unknown-mime-typ
-[6]: https://golang.org/pkg/text/template/
+[0]: https://owasp.org/Top10/
+[1]: https://owasp.org/Top10/A03_2021-Injection/
+[2]: https://pkg.go.dev/html/template
+[3]: https://pkg.go.dev/net/http
+[4]: https://pkg.go.dev/io
+[5]: https://mimesniff.spec.whatwg.org/#rules-for-identifying-an-unknown-mime-type
+[6]: https://pkg.go.dev/text/template

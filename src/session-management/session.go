@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
-	// JWT is not in the native Go packages
-	"github.com/dgrijalva/jwt-go"
+	// Maintained JWT library (replaces deprecated dgrijalva/jwt-go)
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type Key int
@@ -18,36 +19,52 @@ const MyKey Key = 0
 // JWT schema of the data it will store
 type Claims struct {
 	Username string `json:"username"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
+}
+
+// getJWTSecret retrieves the JWT secret from environment variables.
+// SECURITY: Never hardcode secrets in source code.
+func getJWTSecret() []byte {
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		log.Fatal("JWT_SECRET environment variable is required")
+	}
+	return []byte(secret)
 }
 
 // create a JWT and put in the clients cookie
 func setToken(res http.ResponseWriter, req *http.Request) {
-	// 30m Expiration for non-sensitive applications - OWSAP
-	expireToken := time.Now().Add(time.Minute * 30).Unix()
+	// 30m Expiration for non-sensitive applications - OWASP
 	expireCookie := time.Now().Add(time.Minute * 30)
 
-	// token Claims
+	// token Claims using jwt/v5 RegisteredClaims
 	claims := Claims{
-		"TestUser",
-		jwt.StandardClaims{
-			ExpiresAt: expireToken,
+		Username: "TestUser",
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expireCookie),
 			Issuer:    "localhost:9000",
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, _ := token.SignedString([]byte("secret"))
+	signedToken, err := token.SignedString(getJWTSecret())
+	if err != nil {
+		http.Error(res, "Internal server error", http.StatusInternalServerError)
+		log.Printf("Error signing token: %v", err)
+		return
+	}
 
 	// Set Cookie parameters
+	// SameSite attribute helps prevent CSRF attacks
 	cookie := http.Cookie{
 		Name:     "Auth",
 		Value:    signedToken,
 		Expires:  expireCookie, // 30 min
-		HttpOnly: true,
+		HttpOnly: true,         // Prevents JavaScript access
 		Path:     "/",
 		Domain:   "127.0.0.1",
-		Secure:   true,
+		Secure:   true,                    // Only sent over HTTPS
+		SameSite: http.SameSiteStrictMode, // CSRF protection
 	}
 
 	http.SetCookie(res, &cookie)
@@ -70,7 +87,7 @@ func validate(page http.HandlerFunc) http.HandlerFunc {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, fmt.Errorf("unexpected signing method")
 				}
-				return []byte("secret"), nil
+				return getJWTSecret(), nil
 			},
 		)
 

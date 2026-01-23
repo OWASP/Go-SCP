@@ -78,7 +78,7 @@ ASCII characters.
 Third-party packages exist that handle security in Go:
 
 * [Gorilla][6] - One of the most used packages for web
-  application security.
+  application security. (Note: was archived Dec 2022, revived Jul 2023)
   It has support for `websockets`, `cookie sessions`, `RPC`, among
   others.
 * [Form][7] - Decodes `url.Values` into Go value(s) and Encodes Go value(s)
@@ -86,6 +86,184 @@ Third-party packages exist that handle security in Go:
   Dual `Array` and Full `map` support.
 * [Validator][8] - Go `Struct` and `Field` validation, including `Cross Field`,
   `Cross Struct`, `Map` as well as `Slice` and `Array` diving.
+
+## Using go-playground/validator (Recommended)
+
+The `go-playground/validator` package is the de-facto standard for struct
+validation in Go. It provides declarative validation via struct tags.
+
+### Installation
+
+```bash
+go get github.com/go-playground/validator/v10
+```
+
+### Basic Usage
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/go-playground/validator/v10"
+)
+
+type UserRegistration struct {
+    Username string `validate:"required,alphanum,min=3,max=32"`
+    Email    string `validate:"required,email,max=255"`
+    Password string `validate:"required,min=8,max=72"` // 72 = bcrypt limit
+    Age      int    `validate:"gte=13,lte=120"`
+    Website  string `validate:"omitempty,url"`
+    Role     string `validate:"required,oneof=user admin moderator"`
+}
+
+var validate = validator.New()
+
+func validateUser(user *UserRegistration) error {
+    err := validate.Struct(user)
+    if err != nil {
+        // Don't expose detailed validation errors to users
+        // Log them server-side for debugging
+        for _, e := range err.(validator.ValidationErrors) {
+            fmt.Printf("Field %s failed %s validation\n", e.Field(), e.Tag())
+        }
+        return fmt.Errorf("invalid input")
+    }
+    return nil
+}
+```
+
+### Common Validation Tags
+
+| Tag | Description | Example |
+|-----|-------------|---------|
+| `required` | Field must not be zero value | `required` |
+| `email` | Valid email format | `email` |
+| `url` | Valid URL | `url` |
+| `min` | Minimum length/value | `min=8` |
+| `max` | Maximum length/value | `max=255` |
+| `len` | Exact length | `len=10` |
+| `gte` | Greater than or equal | `gte=0` |
+| `lte` | Less than or equal | `lte=100` |
+| `oneof` | Must be one of values | `oneof=red green blue` |
+| `alphanum` | Alphanumeric only | `alphanum` |
+| `uuid` | Valid UUID | `uuid` |
+| `ip` | Valid IP address | `ip` |
+| `cidr` | Valid CIDR notation | `cidr` |
+
+### Security-Focused Custom Validators
+
+```go
+func init() {
+    // Safe filename validator (no path traversal)
+    validate.RegisterValidation("safe_filename", func(fl validator.FieldLevel) bool {
+        filename := fl.Field().String()
+        // Reject path separators and traversal
+        return !strings.ContainsAny(filename, "/\\") &&
+               filename != "." && filename != ".." &&
+               filepath.IsLocal(filename)
+    })
+
+    // No HTML tags validator (XSS prevention)
+    validate.RegisterValidation("no_html", func(fl validator.FieldLevel) bool {
+        return !strings.ContainsAny(fl.Field().String(), "<>")
+    })
+
+    // Alphanumeric with limited special chars
+    validate.RegisterValidation("safe_string", func(fl validator.FieldLevel) bool {
+        matched, _ := regexp.MatchString(`^[a-zA-Z0-9\s\-_\.]+$`, fl.Field().String())
+        return matched
+    })
+}
+
+type FileUpload struct {
+    Filename string `validate:"required,safe_filename,max=255"`
+    Comment  string `validate:"omitempty,no_html,max=1000"`
+}
+```
+
+### Cross-Field Validation
+
+```go
+type PasswordChange struct {
+    CurrentPassword string `validate:"required,min=8"`
+    NewPassword     string `validate:"required,min=8,nefield=CurrentPassword"`
+    ConfirmPassword string `validate:"required,eqfield=NewPassword"`
+}
+```
+
+### Slice and Map Validation
+
+```go
+type BulkOperation struct {
+    // Validate each item in the slice
+    IDs []int64 `validate:"required,min=1,max=100,dive,gt=0"`
+
+    // Validate map keys and values
+    Tags map[string]string `validate:"max=10,dive,keys,alphanum,max=32,endkeys,max=100"`
+}
+```
+
+### HTTP Handler Integration
+
+```go
+func createUserHandler(w http.ResponseWriter, r *http.Request) {
+    var input UserRegistration
+
+    if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+        http.Error(w, "Invalid JSON", http.StatusBadRequest)
+        return
+    }
+
+    if err := validate.Struct(&input); err != nil {
+        // Log detailed error server-side
+        log.Printf("Validation failed: %v", err)
+
+        // Return generic error to client (don't leak field names)
+        http.Error(w, "Invalid input", http.StatusBadRequest)
+        return
+    }
+
+    // Input is valid, proceed with business logic
+    // ...
+}
+```
+
+### Validation Error Messages (Secure Pattern)
+
+```go
+func formatValidationErrors(err error) map[string]string {
+    errors := make(map[string]string)
+
+    for _, e := range err.(validator.ValidationErrors) {
+        // Map technical tags to user-friendly messages
+        switch e.Tag() {
+        case "required":
+            errors[e.Field()] = "This field is required"
+        case "email":
+            errors[e.Field()] = "Invalid email format"
+        case "min":
+            errors[e.Field()] = fmt.Sprintf("Must be at least %s characters", e.Param())
+        case "max":
+            errors[e.Field()] = fmt.Sprintf("Must be at most %s characters", e.Param())
+        default:
+            errors[e.Field()] = "Invalid value"
+        }
+    }
+
+    return errors
+}
+```
+
+**Important Security Notes:**
+
+1. **Validation is not sanitization** - Always sanitize output even if input
+   is validated
+2. **Don't trust validation alone** - Use parameterized queries, output
+   encoding, etc.
+3. **Validate at boundaries** - Validate data entering your system, not just
+   at the edge
+4. **Log validation failures** - They may indicate attack attempts
 
 ## File Manipulation
 

@@ -75,14 +75,27 @@ Most Web Application Frameworks already offer a solution out-of-the-box and
 you're advised to enable it. If you're not using a Framework, the advice is to
 adopt one.
 
-The following example is part of the [Gorilla web toolkit][3] for Go programming
-language. You can find [gorilla/csrf on GitHub][4]
+**Important note about library choices:**
+
+The [Gorilla web toolkit][3] was archived in December 2022 but revived under
+community maintenance in July 2023. While still functional, consider these
+maintained alternatives:
+
+| Library | Description |
+|---------|-------------|
+| [gorilla/csrf][4] | Original Gorilla CSRF (now community maintained) |
+| [justinas/nosurf][8] | Standalone CSRF middleware, no dependencies |
+| [go-chi/chi][9] | Router with built-in CSRF middleware |
+| [labstack/echo][10] | Framework with CSRF middleware |
+
+### Example using gorilla/csrf
 
 ```go
 package main
 
 import (
     "net/http"
+    "os"
 
     "github.com/gorilla/csrf"
     "github.com/gorilla/mux"
@@ -94,11 +107,20 @@ func main() {
     // All POST requests without a valid token will return HTTP 403 Forbidden.
     r.HandleFunc("/signup/post", SubmitSignupForm)
 
+    // SECURITY: Use environment variable for the secret key
+    csrfKey := []byte(os.Getenv("CSRF_KEY"))
+    if len(csrfKey) != 32 {
+        panic("CSRF_KEY must be exactly 32 bytes")
+    }
+
     // Add the middleware to your router by wrapping it.
-    http.ListenAndServe(":8000",
-        csrf.Protect([]byte("32-byte-long-auth-key"))(r))
-    // PS: Don't forget to pass csrf.Secure(false) if you're developing locally
-    // over plain HTTP (just don't leave it on in production).
+    csrfMiddleware := csrf.Protect(
+        csrfKey,
+        csrf.Secure(true),                    // Require HTTPS in production
+        csrf.SameSite(csrf.SameSiteStrictMode), // Additional CSRF protection
+    )
+
+    http.ListenAndServe(":8000", csrfMiddleware(r))
 }
 
 func ShowSignupForm(w http.ResponseWriter, r *http.Request) {
@@ -122,8 +144,11 @@ func SubmitSignupForm(w http.ResponseWriter, r *http.Request) {
 OWASP has a detailed [Cross-Site Request Forgery (CSRF) Prevention Cheat
 Sheet][5], which you're recommended to read.
 
-[1]: https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)
+[1]: https://owasp.org/www-community/attacks/csrf
 [2]: https://en.wikipedia.org/wiki/Cryptographic_nonce
-[3]: http://www.gorillatoolkit.org/
-[4]: https://github.com/gorilla/csrf 
-[5]: https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet#Synchronizer_.28CSRF.29_Tokens
+[3]: https://github.com/gorilla
+[4]: https://github.com/gorilla/csrf
+[5]: https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+[8]: https://github.com/justinas/nosurf
+[9]: https://github.com/go-chi/chi
+[10]: https://github.com/labstack/echo

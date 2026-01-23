@@ -23,32 +23,51 @@ func setToken(res http.ResponseWriter, req *http.Request) {
 We must ensure that the algorithms used to generate our session identifier are
 sufficiently random, to prevent session brute forcing.
 
+**Important:** Never hardcode secrets in source code. Use environment variables:
+
 ```go
-...
+// INSECURE - Never do this
+signedToken, _ := token.SignedString([]byte("secret"))
+
+// SECURE - Use environment variables
+secret := os.Getenv("JWT_SECRET")
+if secret == "" {
+    log.Fatal("JWT_SECRET environment variable required")
+}
 token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-signedToken, _ := token.SignedString([]byte("secret")) //our secret
-...
+signedToken, err := token.SignedString([]byte(secret))
+if err != nil {
+    // Handle error - never ignore errors from cryptographic operations
+    log.Printf("Error signing token: %v", err)
+    return
+}
 ```
 
 Now that we have a sufficiently strong token, we must also set
-the `Domain`, `Path`, `Expires`, `HTTP only`, `Secure` for our cookies. In this
-case the `Expires` value is in this example set to 30 minutes since we are
+the `Domain`, `Path`, `Expires`, `HttpOnly`, `Secure`, and `SameSite` for our
+cookies. In this example the `Expires` value is set to 30 minutes since we are
 considering our application a low-risk application.
 
 ```go
 // Our cookie parameter
 cookie := http.Cookie{
-    Name: "Auth",
-    Value: signedToken,
-    Expires: expireCookie,
-    HttpOnly: true,
-    Path: "/",
-    Domain: "127.0.0.1",
-    Secure: true
+    Name:     "Auth",
+    Value:    signedToken,
+    Expires:  expireCookie, // 30 min
+    HttpOnly: true,         // Prevents JavaScript access (mitigates XSS)
+    Path:     "/",
+    Domain:   "127.0.0.1",
+    Secure:   true,                    // Only sent over HTTPS
+    SameSite: http.SameSiteStrictMode, // CSRF protection
 }
 
-http.SetCookie(res, &cookie) //Set the cookie
+http.SetCookie(res, &cookie) // Set the cookie
 ```
+
+The `SameSite` attribute is critical for CSRF protection. Go supports three values:
+- `http.SameSiteStrictMode` - Cookie is only sent in first-party context (recommended for auth cookies)
+- `http.SameSiteLaxMode` - Cookie is sent with top-level navigations and GET requests from third-party sites
+- `http.SameSiteNoneMode` - Cookie is sent in all contexts (requires `Secure: true`)
 
 Upon sign-in, a new session is always generated. The old session is never
 re-used, even if it is not expired.
