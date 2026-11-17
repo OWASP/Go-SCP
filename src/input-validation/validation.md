@@ -68,7 +68,7 @@ Other techniques to ensure the validity of the data include:
 * _Numeric validation_ - if input is numeric.
 * _Check for Null Bytes_ - `(%00)`
 * _Checks for new line characters_ - `%0d`, `%0a`, `\r`, `\n`
-* _Checks forpath alteration characters_ - `../` or `\\..`
+* _Checks for path alteration characters_ - `../` or `\\..`
 * _Checks for Extended UTF-8_ - check for alternative representations of
   special characters
 
