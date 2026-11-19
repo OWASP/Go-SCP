@@ -141,25 +141,23 @@ tampering has taken place.
 
 ```go
 {...}
-// Get our known Log checksum from checksum file.
-logChecksum, err := ioutil.ReadFile("log/checksum")
-str := string(logChecksum) // convert content to a 'string'
-
-// Compute our current log's SHA256 hash
-b, err := ComputeSHA256("log/log")
+// Get our known log checksum from the checksum file.
+stored, err := root.ReadFile(*checksumFile)
 if err != nil {
-  fmt.Printf("Err: %v", err)
-} else {
-  hash := hex.EncodeToString(b)
-  // Compare our calculated hash with our stored hash
-  if str == hash {
-    // Ok the checksums match.
-    fmt.Println("Log integrity OK.")
-  } else {
-    // The file integrity has been compromised...
-    fmt.Println("File Tampering detected.")
-  }
+    return fmt.Errorf("read checksum: %w", err)
 }
+
+// Compute our current log's SHA-256 hash.
+b, err := ComputeSHA256(root, *logFile)
+if err != nil {
+    return fmt.Errorf("hash log: %w", err)
+}
+
+// Compare our calculated hash with our stored hash.
+if hex.EncodeToString(b) != strings.TrimSpace(string(stored)) {
+    return errors.New("file tampering detected")
+}
+_, _ = fmt.Fprintln(stdout, "Log integrity OK.")
 {...}
 ```
 

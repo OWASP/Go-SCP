@@ -61,11 +61,15 @@ func (fs justFilesFilesystem) Open(name string) (http.File, error) {
 }
 ```
 
-Then we simply use it in our `http.ListenAndServe` as follows:
+Then we simply use it in our server as follows:
 
 ```go
-fs := justFilesFilesystem{http.Dir("tmp/static/")}
-http.ListenAndServe(":8080", http.StripPrefix("/tmp/static", http.FileServer(fs)))
+fs := justFilesFilesystem{http.Dir(*dir)}
+srv := &http.Server{
+    Addr:              *addr,
+    Handler:           http.StripPrefix("/tmp/static", http.FileServer(fs)),
+    ReadHeaderTimeout: readHeaderTimeout,
+}
 ```
 
 Note that our application is only allowing the `tmp/static/` path to be
