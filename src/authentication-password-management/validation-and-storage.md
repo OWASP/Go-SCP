@@ -293,7 +293,7 @@ if bcrypt.CompareHashAndPassword([]byte(expectedPassword), password) != nil {
  ```
 
 If you're not comfortable with password hashing and comparison
-options/parameters, better delegating the task to specialized third-party
+options/parameters, better delegate the task to specialized third-party
 package with safe defaults. Always opt for an actively maintained package and
 remind to check for known issues.
 
