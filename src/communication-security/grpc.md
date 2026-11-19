@@ -32,35 +32,56 @@ private keys to source control.
 
 ## Secure gRPC Server
 
-The complete code can be found [here][3].
+The complete code can be found [here][3]. As in the other examples, `main`
+only sets up signal handling and calls `run`, which takes its arguments and
+output streams as parameters so it can be tested.
 
 ```go
-var (
-    port     = flag.Int("port", 10001, "The server port")
-    certFile = flag.String("cert", "../cert/service.pem", "TLS certificate file")
-    keyFile  = flag.String("key", "../cert/service.key", "TLS private key file")
-)
-
-func main() {
-    flag.Parse()
+// run serves the SampleService over TLS until ctx is cancelled, then stops
+// gracefully. It prints the listening address to stdout once it accepts
+// connections.
+func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
+    flags := flag.NewFlagSet(args[0], flag.ContinueOnError)
+    flags.SetOutput(stderr)
+    addr := flags.String("addr", ":10001", "address to listen on")
+    certFile := flags.String("cert", "../cert/service.pem", "TLS certificate file")
+    keyFile := flags.String("key", "../cert/service.key", "TLS private key file")
+    if err := flags.Parse(args[1:]); err != nil {
+        return err
+    }
 
     // Load the server certificate and private key used for TLS.
     creds, err := credentials.NewServerTLSFromFile(*certFile, *keyFile)
     if err != nil {
-        log.Fatalf("TLS setup failed: %v", err)
+        return fmt.Errorf("load TLS certificate: %w", err)
     }
 
-    lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
+    var lc net.ListenConfig
+    lis, err := lc.Listen(ctx, "tcp", *addr)
     if err != nil {
-        log.Fatalf("Could not start the server: %v", err)
+        return fmt.Errorf("listen: %w", err)
     }
 
-    s := grpc.NewServer(grpc.Creds(creds))
-    pb.RegisterSampleServiceServer(s, &server{})
-    log.Printf("Server started at: %v", lis.Addr())
-    if err := s.Serve(lis); err != nil {
-        log.Fatalf("Could not start the server: %v", err)
+    srv := grpc.NewServer(grpc.Creds(creds))
+    pb.RegisterSampleServiceServer(srv, &server{logger: slog.New(slog.NewTextHandler(stderr, nil))})
+
+    // Stop accepting new calls and let in-flight ones finish when ctx is
+    // cancelled. The done channel lets this goroutine exit if Serve fails.
+    done := make(chan struct{})
+    defer close(done)
+    go func() {
+        select {
+        case <-ctx.Done():
+            srv.GracefulStop()
+        case <-done:
+        }
+    }()
+
+    _, _ = fmt.Fprintf(stdout, "listening on %s\n", lis.Addr())
+    if err = srv.Serve(lis); err != nil {
+        return fmt.Errorf("serve: %w", err)
     }
+    return nil
 }
 ```
 
@@ -69,48 +90,53 @@ func main() {
 The complete code can be found [here][4].
 
 ```go
-func main() {
-    flag.Parse()
+// run sends one Greet call to the server and prints the response to stdout.
+// It fails if the server's certificate is not signed by the CA in -ca.
+func run(ctx context.Context, args []string, stdout, stderr io.Writer) (err error) {
+    flags := flag.NewFlagSet(args[0], flag.ContinueOnError)
+    flags.SetOutput(stderr)
+    addr := flags.String("addr", "localhost:10001", "address of the server")
+    name := flags.String("name", "Art Rosenbaum", "name to greet")
+    caFile := flags.String("ca", "../cert/ca.cert", "CA certificate used to verify the server")
+    timeout := flags.Duration("timeout", time.Second, "time limit for the call")
+    if err = flags.Parse(args[1:]); err != nil {
+        return err
+    }
 
-    b, err := os.ReadFile(*caFile)
+    // Trust only servers whose certificate is signed by the CA in -ca. gRPC
+    // requires TLS 1.2 or later by default. Never build credentials from a
+    // tls.Config with InsecureSkipVerify set to true: that disables
+    // certificate verification.
+    creds, err := credentials.NewClientTLSFromFile(*caFile, "")
     if err != nil {
-        log.Fatalf("Could not read CA certificate: %v", err)
-    }
-    cp := x509.NewCertPool()
-    if !cp.AppendCertsFromPEM(b) {
-        log.Fatal("credentials: failed to append certificates")
+        return fmt.Errorf("load CA certificate: %w", err)
     }
 
-    // Verify the server certificate against our CA. Never set
-    // InsecureSkipVerify to true: that disables certificate verification.
-    config := &tls.Config{
-        MinVersion: tls.VersionTLS12,
-        RootCAs:    cp,
-    }
-
-    // Set up a connection to the server.
-    conn, err := grpc.NewClient(*addr, grpc.WithTransportCredentials(credentials.NewTLS(config)))
+    conn, err := grpc.NewClient(*addr, grpc.WithTransportCredentials(creds))
     if err != nil {
-        log.Fatalf("Could not connect to server: %v", err)
+        return fmt.Errorf("create client: %w", err)
     }
-    defer conn.Close()
+    defer func() { err = errors.Join(err, conn.Close()) }()
     c := pb.NewSampleServiceClient(conn)
 
-    // Contact the server and print out its response.
-    ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+    ctx, cancel := context.WithTimeout(ctx, *timeout)
     defer cancel()
 
     r, err := c.Greet(ctx, &pb.SendMsg{Name: *name})
     if err != nil {
-        log.Fatalf("Could not send message: %v", err)
+        return fmt.Errorf("greet: %w", err)
     }
-    log.Printf("Received response: %s", r.GetMessage())
+    _, _ = fmt.Fprintf(stdout, "Received response: %s\n", r.GetMessage())
+    return nil
 }
 ```
 
 If the server presents a certificate that was not signed by the trusted CA,
 the call fails with an error such as `x509: certificate signed by unknown
 authority`, which is exactly what you want.
+The client's [tests][7] check exactly this: the call succeeds against a server
+whose certificate is signed by the trusted CA, and fails against one signed by
+an unknown CA.
 
 **Important:** As mentioned in the [HTTP/TLS section][5], TLS certificates
 should be valid, not expired, and installed with intermediate certificates when
@@ -122,7 +148,8 @@ traffic that leaves the host.
 
 [1]: https://pkg.go.dev/google.golang.org/grpc
 [2]: ./grpc-code/
-[3]: ./grpc-code/grpc_server_secured/server.go
-[4]: ./grpc-code/grpc_client_secured/client.go
+[3]: ./grpc-code/grpc_server_secured/main.go
+[4]: ./grpc-code/grpc_client_secured/main.go
 [5]: http-tls.md
 [6]: https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/
+[7]: ./grpc-code/grpc_client_secured/main_test.go

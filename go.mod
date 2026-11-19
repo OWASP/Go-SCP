@@ -1,8 +1,9 @@
-module github.com/OWASP/Go-SCP/src/communication-security/grpc-code
+module github.com/OWASP/Go-SCP
 
 go 1.26.0
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	google.golang.org/grpc v1.85.0
 	google.golang.org/protobuf v1.36.12
 )
