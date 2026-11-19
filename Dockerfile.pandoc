@@ -1,0 +1,13 @@
+# Image for build-books.sh: pandoc with LaTeX, plus
+#   - DejaVu fonts, whose monospace face covers the box-drawing characters
+#     used in code blocks;
+#   - fvextra (and its dependencies), to wrap long code lines in the PDF
+#     instead of cutting them off.
+# The Debian variant is published for both amd64 and arm64.
+FROM pandoc/latex:3.14.0.0-debian
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends fonts-dejavu && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN tlmgr install fvextra lineno upquote xstring

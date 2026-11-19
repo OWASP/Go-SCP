@@ -1,0 +1,30 @@
+# Metadata for build-books.sh. The version subtitle comes from VERSION.
+title: Go Language - Web Application Secure Coding Practices
+author: Checkmarx Security Research Team
+rights: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+lang: en-US
+cover-image: src/cover.jpg
+
+# PDF only (LaTeX): A4 as in book.json, DejaVu fonts for the box-drawing
+# characters in code blocks, long code lines wrapped instead of cut off, and
+# \sloppy so a line holding a long unbreakable word (inline code, a hash, a
+# URL) stretches its spaces rather than running into the margin.
+papersize: a4
+geometry: margin=2cm
+mainfont: DejaVu Serif
+sansfont: DejaVu Sans
+monofont: DejaVu Sans Mono
+monofontoptions: Scale=0.85
+colorlinks: true
+header-includes: |
+  \sloppy
+  \usepackage{fvextra}
+  \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,breaknonspaceingroup,commandchars=\\\{\}}
+  \fvset{breaklines,breakanywhere}
+  \RecustomVerbatimEnvironment{verbatim}{Verbatim}{}
+
+# Used by fix-internal-links.lua: links starting with "/" are relative to
+# book-root, and links to files that are not chapters, such as the .go
+# examples, point to source-url.
+book-root: src
+source-url: https://github.com/OWASP/Go-SCP/blob/master/

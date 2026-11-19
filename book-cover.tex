@@ -1,0 +1,8 @@
+% PDF cover page, added to the preamble by build-books.sh. \AtBeginDocument
+% places it before the title page that pandoc's template generates.
+\AtBeginDocument{%
+  \begin{titlepage}
+  \centering
+  \includegraphics[height=\textheight,width=\textwidth,keepaspectratio]{src/cover.jpg}
+  \end{titlepage}%
+}
