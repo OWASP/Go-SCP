@@ -111,16 +111,32 @@ version can be set with the following configurations:
 
 ```go
 // MinVersion contains the minimum SSL/TLS version that is acceptable.
-// If zero, then TLS 1.0 is taken as the minimum.
-  MinVersion uint16
+// If zero, then TLS 1.2 is taken as the minimum (as of Go 1.18+).
+// IMPORTANT: TLS 1.0 and 1.1 are deprecated and should not be used.
+MinVersion uint16
 ```
 
 ```go
 // MaxVersion contains the maximum SSL/TLS version that is acceptable.
 // If zero, then the maximum version supported by this package is used,
-// which is currently TLS 1.2.
+// which is currently TLS 1.3 (supported since Go 1.12).
 MaxVersion uint16
 ```
+
+**Modern TLS Configuration (recommended):**
+
+```go
+config := &tls.Config{
+    MinVersion: tls.VersionTLS12, // TLS 1.0/1.1 are deprecated
+    // TLS 1.3 is used automatically when available (default since Go 1.13)
+    // No need to set MaxVersion unless you have specific requirements
+}
+```
+
+TLS 1.3 offers improved security and performance over TLS 1.2, including:
+- Faster handshakes (1-RTT, or 0-RTT for resumed sessions)
+- Removal of legacy cryptographic algorithms
+- Encrypted handshake messages
 
 The safety of the used ciphers can be checked with [SSL Labs][4].
 
