@@ -51,13 +51,13 @@ Fork the `go-webapp-scp` repo and then clone your own repository.
 The next step is to enable Git Flow hooks; enter your local repository
 
 ```shell
-$ cd go-webapp-scp
+cd go-webapp-scp
 ```
 
 and run
 
 ```shell
-$ git flow init
+git flow init
 ```
 
 We're good to go with git flow default values.
@@ -66,13 +66,13 @@ In a nutshell, everytime you want to work on a section, you should start a
 "feature":
 
 ```shell
-$ git flow feature start my-new-section
+git flow feature start my-new-section
 ```
 
 To keep your work safe, don't forget to publish your feature:
 
 ```shell
-$ git flow feature publish
+git flow feature publish
 ```
 
 Once you're ready to merge your work with others, you should go to the main
@@ -88,7 +88,7 @@ When you find a typo or something that needs to be fixed, you should start a
 "hotfix"
 
 ```shell
-$ git flow hotfix start
+git flow hotfix start
 ```
 
 This will apply your change on both `develop` and `master` branches.
@@ -102,7 +102,7 @@ To get Git Book tracking file changes and to live-preview your work, you just
 need to run the following command on a shell session
 
 ```shell
-$ npm run serve
+npm run serve
 ```
 
 The shell output will include a `localhost` URL where you can preview the book.
@@ -111,8 +111,8 @@ The shell output will include a `localhost` URL where you can preview the book.
 
 Build the PDF, ePub and DOCX editions into `dist/` with:
 
-```
-$ ./build-books.sh
+```shell
+./build-books.sh
 ```
 
 Only Docker is needed: the script builds a pandoc image from
@@ -125,8 +125,8 @@ somewhere else inside the repository.
 
 The Go examples under `src/` form one module. Check them with:
 
-```
-$ go vet ./... && go test ./...
+```shell
+go vet ./... && go test ./...
 ```
 
 GitHub Actions runs both checks on every pull request and keeps the built books
@@ -138,14 +138,14 @@ attached to it.
 The GitBook toolchain still works for Mobi. If you have `node` installed, you
 can run:
 
-```
-$ npm i && node_modules/.bin/gitbook install && npm run build
+```shell
+npm i && node_modules/.bin/gitbook install && npm run build
 ```
 
 or, using an ephemeral Docker container:
 
-```
-$ docker-compose run -u node:node --rm build
+```shell
+docker-compose run -u node:node --rm build
 ```
 
 [1]: https://git-scm.com
