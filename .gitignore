@@ -2,3 +2,4 @@ node_modules/
 npm-debug.log
 _book
 *.swp
+src/communication-security/grpc-code/cert/

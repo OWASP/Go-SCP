@@ -7,22 +7,24 @@ import (
 	"log"
 	"net"
 
-	pb "pentest/grpc/samplebuff"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+
+	pb "github.com/OWASP/Go-SCP/src/communication-security/grpc-code/samplebuff"
 )
 
 var (
-	port = flag.Int("port", 10001, "The server port")
+	port     = flag.Int("port", 10001, "The server port")
+	certFile = flag.String("cert", "../cert/service.pem", "TLS certificate file")
+	keyFile  = flag.String("key", "../cert/service.key", "TLS private key file")
 )
 
-// server is used to implement sample.GreeterServer.
+// server is used to implement sample.SampleServiceServer.
 type server struct {
 	pb.UnimplementedSampleServiceServer
 }
 
-// Greet implements sample.GreeterServer
+// Greet implements sample.SampleServiceServer.
 func (s *server) Greet(ctx context.Context, in *pb.SendMsg) (*pb.SendResp, error) {
 	log.Printf("Received msg: %v", in.GetName())
 	return &pb.SendResp{Message: "Hey " + in.GetName()}, nil
@@ -30,16 +32,16 @@ func (s *server) Greet(ctx context.Context, in *pb.SendMsg) (*pb.SendResp, error
 
 func main() {
 	flag.Parse()
+
+	// Load the server certificate and private key used for TLS.
+	creds, err := credentials.NewServerTLSFromFile(*certFile, *keyFile)
+	if err != nil {
+		log.Fatalf("TLS setup failed: %v", err)
+	}
+
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
 		log.Fatalf("Could not start the server: %v", err)
-	}
-
-	//Configuring the certificates
-	creds, err := credentials.NewServerTLSFromFile("../cert/service.pem", "../cert/service.key")
-
-	if err != nil {
-		log.Fatalf("TLS setup failed: %v", err)
 	}
 
 	s := grpc.NewServer(grpc.Creds(creds))
