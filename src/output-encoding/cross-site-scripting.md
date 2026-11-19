@@ -128,8 +128,9 @@ Making `param1` equal to "&lt;h1&gt;" will lead to `Content-Type` being sent as
 >
 > If user-controlled data ever becomes part of the template definition, the application becomes
 > vulnerable to **Server-Side Template Injection (SSTI)** — an attack that can bypass auto-escaping,
-> access unexported struct fields, invoke methods, or execute arbitrary code. **User input must never
-> be concatenated into the template source; it must only be supplied as a parameter value.**
+> read any exported field of the data passed to the template, and call its exported methods or any
+> function registered with `Funcs`, which may lead to code execution. **User input must never be
+> concatenated into the template source; it must only be supplied as a parameter value.**
 
 By replacing the [text/template package][6] with the [html/template][2] one,
 you'll be ready to proceed... safely, provided untrusted data is only passed
