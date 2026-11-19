@@ -41,7 +41,7 @@ from the template, by using a minus sign `-` inside the action's delimiter.
 Executing the template with source
 
 ```
-{{- 23}} < {{45 -}}
+{{ 23 -}} < {{- 45 }}
 ```
 
 will lead to the following output

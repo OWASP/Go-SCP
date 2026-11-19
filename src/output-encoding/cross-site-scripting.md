@@ -5,9 +5,10 @@ Although most developers have heard about it, most have never tried to exploit
 a Web Application using XSS.
 
 Cross Site Scripting has been on [OWASP Top 10][0] security risks since 2003 and
-it's still a common vulnerability. The [2013 version][1] is quite detailed about
-XSS, for example: attack vectors, security weakness, technical impacts and
-business impacts.
+it's still a common vulnerability. In the [2021 Top 10][1], XSS is now part of
+the broader "Injection" category (A03:2021). The OWASP documentation is quite
+detailed about XSS, covering: attack vectors, security weakness, technical
+impacts and business impacts.
 
 In short
 
@@ -111,8 +112,33 @@ Making `param1` equal to "&lt;h1&gt;" will lead to `Content-Type` being sent as
 
 ![XSS while using text/template package][text-template-xss]
 
+**Understanding Go template threat models**
+
+The `text/template` package performs no output encoding. It is designed for
+generating text-based formats (configuration files, plain-text emails, etc.),
+not HTML output. When used to render HTML without manual escaping, user input
+is written verbatim, making XSS inevitable.
+
+The `html/template` package automatically escapes values according to their
+context, but **only when untrusted data is passed as template parameters**
+(e.g. `{{ . }}`). This safety guarantee does **not** apply when user input is
+used to build the template source string itself:
+
+```go
+tmpl.Parse(`<div>` + userInput + `</div>`) // DANGEROUS
+```
+
+If user-controlled data ever becomes part of the template definition, the
+application becomes vulnerable to **Server-Side Template Injection (SSTI)**: an
+attack that can bypass auto-escaping, read any exported field of the data passed
+to the template, and call its exported methods or any function registered with
+`Funcs`, which may lead to code execution. **User input must never be
+concatenated into the template source; it must only be supplied as a parameter
+value.**
+
 By replacing the [text/template package][6] with the [html/template][2] one,
-you'll be ready to proceed... safely.
+you'll be ready to proceed... safely, provided untrusted data is only passed
+as template parameters (never used to construct the template source).
 
 ```go
 package main
@@ -151,10 +177,10 @@ but also `param1` is properly encoded to the output media: the browser.
 [html-template-plain-text]: images/html-template-plain-text.png
 [html-template-noxss]: images/html-template-text-plain-noxss.png
 
-[0]: https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project
-[1]: https://www.owasp.org/index.php/Top_10_2013-A3-Cross-Site_Scripting_(XSS)
-[2]: https://golang.org/pkg/html/template/
-[3]: https://golang.org/pkg/net/http/
-[4]: https://golang.org/pkg/io/
-[5]: https://mimesniff.spec.whatwg.org/#rules-for-identifying-an-unknown-mime-typ
-[6]: https://golang.org/pkg/text/template/
+[0]: https://owasp.org/Top10/
+[1]: https://owasp.org/Top10/A03_2021-Injection/
+[2]: https://pkg.go.dev/html/template
+[3]: https://pkg.go.dev/net/http
+[4]: https://pkg.go.dev/io
+[5]: https://mimesniff.spec.whatwg.org/#rules-for-identifying-an-unknown-mime-type
+[6]: https://pkg.go.dev/text/template

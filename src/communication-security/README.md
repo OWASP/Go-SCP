@@ -13,5 +13,6 @@ The scope of this section covers the following communication channels:
 
 * HTTP/HTTPS
 * Websockets
+* gRPC
 
 [1]: https://www.owasp.org/index.php/Man-in-the-middle_attack

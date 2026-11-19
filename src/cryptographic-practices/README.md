@@ -132,6 +132,7 @@ import (
     "crypto/aes"
     "crypto/cipher"
     "crypto/rand"
+    "errors"
     "io"
     "log"
 )
@@ -147,7 +148,8 @@ func encrypt(val []byte, secret []byte) ([]byte, error) {
         return nil, err
     }
 
-    nonce := make([]byte, aead.NonceSize())
+    buffer := make([]byte, aead.NonceSize()+aead.Overhead()+len(val))
+    nonce := buffer[:aead.NonceSize()]
     if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
         return nil, err
     }
@@ -168,7 +170,7 @@ func decrypt(val []byte, secret []byte) ([]byte, error) {
 
     size := aead.NonceSize()
     if len(val) < size {
-        return nil, err
+        return nil, errors.New("ciphertext too short")
     }
 
     result, err := aead.Open(nil, val[:size], val[size:], nil)
