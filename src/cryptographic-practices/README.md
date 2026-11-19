@@ -148,7 +148,7 @@ func encrypt(val []byte, secret []byte) ([]byte, error) {
     }
 
     buffer := make([]byte, aead.NonceSize()+aead.Overhead()+len(val))
-	nonce := buffer[:aead.NonceSize()]
+    nonce := buffer[:aead.NonceSize()]
     if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
         return nil, err
     }
