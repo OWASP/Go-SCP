@@ -112,8 +112,28 @@ Making `param1` equal to "&lt;h1&gt;" will lead to `Content-Type` being sent as
 
 ![XSS while using text/template package][text-template-xss]
 
+> **Understanding Go template threat models**
+>
+> The `text/template` package performs no output encoding. It is designed for generating text-based
+> formats (configuration files, plain-text emails, etc.), not HTML output. When used to render HTML
+> without manual escaping, user input is written verbatim — making XSS inevitable.
+>
+> The `html/template` package automatically contextual-escapes values, but **only when untrusted data
+> is passed as template parameters** (e.g. `{{ . }}`). This safety guarantee does **not** apply when
+> user input is used to build the template source string itself:
+>
+> ```go
+> tmpl.Parse(`<div>` + userInput + `</div>`) // DANGEROUS
+> ```
+>
+> If user-controlled data ever becomes part of the template definition, the application becomes
+> vulnerable to **Server-Side Template Injection (SSTI)** — an attack that can bypass auto-escaping,
+> access unexported struct fields, invoke methods, or execute arbitrary code. **User input must never
+> be concatenated into the template source; it must only be supplied as a parameter value.**
+
 By replacing the [text/template package][6] with the [html/template][2] one,
-you'll be ready to proceed... safely.
+you'll be ready to proceed... safely, provided untrusted data is only passed
+as template parameters (never used to construct the template source).
 
 ```go
 package main
