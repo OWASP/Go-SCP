@@ -123,7 +123,8 @@ The example below illustrates encryption and decryption using an [AES-256][9]
 (*256 bits/32 bytes*) based key, with a clear separation of concerns such as
 encryption, decryption and secret generation. The `secret` method is a
 convenient option which helps generate a secret. The source code sample was
-taken from [here][10] but has been slightly modified.
+adapted, with slight modifications, from the article
+[Data encryption and decryption with a secret key example in Golang][10].
 
 ```go
 package main
