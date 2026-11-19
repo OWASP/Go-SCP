@@ -93,29 +93,37 @@ Yes, you guessed it, you would be able to predict the user's password!
 Go 1.22: ChaCha8Rand Improvements
 ---------------------------------
 
-Go 1.22 introduced a significant security improvement: the `math/rand` package
-now uses **ChaCha8Rand**, a cryptographically-strong pseudorandom number
-generator based on the ChaCha stream cipher.
+Go 1.22 introduced a significant security improvement: the top-level functions
+of `math/rand` and `math/rand/v2` (such as `rand.Int` and `rand.Shuffle`) now
+use **ChaCha8Rand**, a cryptographically-strong pseudorandom number generator
+based on the ChaCha stream cipher ([source][5]). A generator you build yourself
+with `rand.New(rand.NewSource(seed))` in `math/rand` still uses the old
+algorithm and is fully predictable from its seed.
 
 ### What Changed
 
 | Aspect | Pre-Go 1.22 | Go 1.22+ |
 |--------|-------------|----------|
-| Algorithm | Linear feedback shift register | ChaCha8 stream cipher |
+| Algorithm | Additive lagged Fibonacci generator | ChaCha8 stream cipher |
 | Seed size | 63 bits | 256 bits |
-| Predictability | ~607 values to predict all future outputs | Cryptographically secure |
-| Default behavior | Deterministic with same seed | Random seed from crypto/rand |
+| Predictability | ~607 observed values predict all future outputs | Cryptographically strong |
+| Default seed | Fixed seed up to Go 1.19; random seed since Go 1.20 | Random seed from the operating system |
 
 ### Security Implications
 
 **Before Go 1.22:**
-Using `math/rand` for security-sensitive operations was a "serious security
-catastrophe" - an attacker observing output could predict all future values.
+Using `math/rand` for security-sensitive operations was a serious
+vulnerability: an attacker observing enough output could predict all future
+values.
 
 **Go 1.22+:**
-Accidental use of `math/rand` instead of `crypto/rand` is now "just a mistake"
-rather than a critical vulnerability. However, `crypto/rand` is **still
-recommended** for security-sensitive operations.
+Accidental use of the top-level `math/rand` functions instead of `crypto/rand`
+is much less dangerous than it used to be. However, `crypto/rand` is **still
+required** for security-sensitive operations: the `math/rand` packages make no
+security promises, and explicitly seeded generators remain predictable.
+
+Since Go 1.20 the top-level `Seed` function is deprecated, and since Go 1.24
+calling it has no effect (unless `GODEBUG=randseednop=0` is set).
 
 ### Recommendations
 
@@ -146,14 +154,16 @@ func shuffleItems(items []Item) {
 Go 1.22 introduced `math/rand/v2`:
 
 ```go
-// Old package (still works, uses ChaCha8 by default now)
+// Old package (still works; its top-level functions use ChaCha8 since Go 1.22)
 import "math/rand"
 
 // New package (recommended for new code)
 import "math/rand/v2"
 ```
 
-The v2 package has cleaner APIs and always uses ChaCha8Rand.
+The v2 package has cleaner APIs, has no top-level `Seed` function, and its
+top-level functions always use ChaCha8Rand. It also offers explicit `ChaCha8`
+and `PCG` sources for when you need a reproducible sequence.
 
 FIPS 140-3 Compliance (Go 1.24+)
 --------------------------------
