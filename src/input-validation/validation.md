@@ -280,9 +280,11 @@ the document.
 
 ## Data sources
 
-Anytime data is passed from a trusted source to a less-trusted source, integrity
-checks should be made. This guarantees that the data has not been tampered with
-and we are receiving the intended data. Other data source checks include:
+Anytime data is passed from a less-trusted source to a more-trusted source (for
+example, user input, external APIs, or client requests to your application),
+integrity checks and validation should be performed. This ensures that the data
+has not been tampered with and meets the expected format and constraints. Other
+data source checks include:
 
 * _Cross-system consistency checks_
 * _Hash totals_
