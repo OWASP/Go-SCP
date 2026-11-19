@@ -32,9 +32,9 @@ private keys to source control.
 
 ## Secure gRPC Server
 
-The complete code can be found [here][3]. As in the other examples, `main`
-only sets up signal handling and calls `run`, which takes its arguments and
-output streams as parameters so it can be tested.
+The complete code is in [`grpc_server_secured/main.go`][3]. As in the other
+examples, `main` only sets up signal handling and calls `run`, which takes its
+arguments and output streams as parameters so it can be tested.
 
 ```go
 // run serves the SampleService over TLS until ctx is cancelled, then stops
@@ -87,7 +87,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 
 ## Secure gRPC Client
 
-The complete code can be found [here][4].
+The complete code is in [`grpc_client_secured/main.go`][4].
 
 ```go
 // run sends one Greet call to the server and prints the response to stdout.
