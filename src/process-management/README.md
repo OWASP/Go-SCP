@@ -1,224 +1,264 @@
 Process Management
 ==================
-Goroutines is one of the major reasons why Go has been one of the most widely language since past few years.
-Goroutines are lightweight thread managed by go runtime which allows developers to write concurrent programs in go.
-The cost of goroutines are considerably lighter than a traditional thread and it's very common for go applications to 
-have thousands of goroutines concurrently.
 
+Goroutines are one of the main reasons for Go's popularity. They are
+lightweight threads managed by the Go runtime, and they make it easy to write
+concurrent programs. A goroutine costs far less than an operating system
+thread, so it is common for Go applications to run thousands of them at once.
 
-However, one of the common problems with goroutines is that a badly written goprogram might produce **hanging** or **zombie** goroutines
-which might hold on to the system resources and keep consuming memory. This might cause problems for large-scale services as attacker might
-launch attacks which might lead to creation of such hanging Goroutines in large numbers, subsequently leading to putting load on CPU and memory and negatively affecting availablity of the applicaton altogether. Let's look at what hanging goroutines are and ways to avoid those.
+However, a badly written program can leave **leaked** goroutines behind:
+goroutines that are blocked forever and will never exit. Each one keeps its
+stack and everything it references in memory. If an attacker can trigger the
+code path that leaks a goroutine, for example by sending requests that time
+out, they can make the service accumulate leaked goroutines until it runs out
+of memory, which hurts the availability of the application. Let's look at what
+leaked goroutines look like and how to avoid them.
 
-Here is an example of what an hanging goroutine looks like:
+Here is an example of a leaked goroutine:
+
 ```go
 func leakingGoroutine(ch chan string) {
-	val := <-ch
-	fmt.Println(val)
+    val := <-ch
+    fmt.Println(val)
 }
 
 func handler() {
-	ch := make(chan string)
+    ch := make(chan string)
 
-	go leakingGoroutine(ch)
-	return
+    go leakingGoroutine(ch)
+    return
 }
 ```
 
-Here even if the handler returns the Goroutine continues live in the background waiting for data to be sent over channel, which will never happen.
+Even after `handler` returns, the goroutine stays alive in the background,
+waiting for a value on the channel that will never be sent.
 
-There are two common patterns which can result in such leaks. Those patterns are as follows:
-1. The Forgotten sender
-2. The Abandoned receiver
+There are two common patterns that cause such leaks:
+
+1. The forgotten sender
+2. The abandoned receiver
 
 ## The Forgotten Sender
-This happens when the sender is blocked because no receiver is waiting on the channel to receive the data.
+
+This happens when a sender is blocked because no receiver will ever read from
+the channel.
+
 ```go
 func danglingSender(ch chan string) {
-	val := "Brian"
-    // This will be blocked as no receiver is available to receive the data
-	ch <- val
+    val := "Brian"
+    // This blocks forever, as no receiver is available.
+    ch <- val
 }
 
 func handler() {
-	ch := make(chan string)
+    ch := make(chan string)
 
-	go danglingSender(ch)
-	return
+    go danglingSender(ch)
+    return
 }
 ```
 
-Such thing can happen in following scenarios.
-**Wrong use of Context**
+This can happen in the following scenarios.
+
+**Returning early after a timeout**
 
 ```go
 func danglingSender(ch chan string) {
-	//simulated async function
-	val := someAsyncNetworkCall()
-	ch <- val
+    val := someNetworkCall() // may take longer than the caller waits
+    ch <- val
 }
 
 func handlerWithContext() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
-	defer cancel()
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+    defer cancel()
 
-	ch := make(chan string)
-	go danglingSender(ch)
+    ch := make(chan string)
+    go danglingSender(ch)
 
-	select {
-	case val := <-ch:
-		{
-			fmt.Printf("Value Received :%s", val)
-		}
-	case <-ctx.Done():
-		{
-			return errors.New("Timeout! Exiting")
-		}
-	}
+    select {
+    case val := <-ch:
+        fmt.Printf("Value received: %s\n", val)
+    case <-ctx.Done():
+        return errors.New("timeout")
+    }
     return nil
 }
-	
 ```
-The above program tries to simulate web service handler. We have sent a context that will issue a timeout after 10ms. Then we spawn a Goroutine that will asynchronous network call.  
-In case of the network call taking more time than expected and a timeout happens, the program will run run `case <- ctx.Done()` and the handler will return an error.  
-As soon as the handler returns the danglingSender function will be blocked as there is no one to receive the val, which will never happen.
 
-**Wrong placement of Receiver**
+This simulates a web service handler. The context times out after 10ms while
+a goroutine makes a network call. If the call takes longer than that, the
+handler takes the `<-ctx.Done()` branch and returns an error. When the network
+call finally finishes, `danglingSender` blocks forever trying to send `val`,
+because nobody is receiving anymore.
+
+**Returning early before receiving**
+
 ```go
 func danglingSender(ch chan string) {
-	val := someAsyncNetworkCall()
-	ch <- val
+    val := someNetworkCall()
+    ch <- val
 }
 
 func handler() error {
-	ch := make(chan string)
-	go danglingSender(ch)
+    ch := make(chan string)
+    go danglingSender(ch)
 
-	err := validateSomeData()
+    if err := validateSomeData(); err != nil {
+        return fmt.Errorf("validation failed: %w", err)
+    }
 
-	if err != nil {
-		return errors.New("Validation error.Exiting")
-	}
-
-	data := <-ch
-	fmt.Println(data)
-	return nil
+    data := <-ch
+    fmt.Println(data)
+    return nil
 }
 ```
 
-Here we spawn a Goroutine that makes a network call and simultenously move to some other validation logic. If the validation returns error than the handler exits. And as a consequence the Goroutine gets blocked forever as there is nothing at the receiving end of the channel.
+Here we start a goroutine that makes a network call and, at the same time, run
+some validation. If the validation fails, the handler returns, and the goroutine
+blocks forever because nothing will receive from the channel.
 
+**Solution to the forgotten sender**
 
-**Solution to The Forgotten Sender**  
-To summarize the forgotten sender happens as no receiver is present on the other side to receive the data. And the root cause is the unbuffered channel we have been using.
-An unbuffered channel requires a receiver as soon as the message is sent on the channel otherwise the sender is blocked. So, the solution is to buffered channel, where we specifiy the capacity of the channel while initializing it. This way the sender can send data into the channel without requiring a receiver.
+The forgotten sender happens because nothing receives the value, and the
+channel is unbuffered: a send on an unbuffered channel blocks until a receiver
+takes the value. The solution is to give the channel enough buffer space for
+every value the goroutine will send, so the send completes even if nobody ever
+reads it:
 
 ```go
 func danglingSender(ch chan string) {
-	val := "Brian"
-    // This won't be blocked
-	ch <- val
+    val := "Brian"
+    // This no longer blocks: the value goes into the buffer.
+    ch <- val
 }
 
 func handler() {
-	ch := make(chan string,1)
+    ch := make(chan string, 1)
 
-	go danglingSender(ch)
-	return
+    go danglingSender(ch)
+    return
 }
 ```
 
+The same fix (`make(chan string, 1)`) applies to both scenarios above. Once the
+goroutine has sent its value and returned, the channel and the value are
+garbage collected.
+
 ## The Abandoned Receiver
-This is exact opposite of previous pattern. Here the receiver gets blocked as no sender is sending the data from other side.
+
+This is the opposite pattern: a receiver is blocked because no sender will ever
+send on the channel or close it.
 
 ```go
 func danglingReceiver(ch chan int) {
-	//This will block
-	val := <-ch
-	fmt.Println(val)
+    // This blocks forever.
+    val := <-ch
+    fmt.Println(val)
 }
 
 func handler() {
-	ch := make(chan int)
-	go danglingReceiver(ch)
+    ch := make(chan int)
+    go danglingReceiver(ch)
 }
 ```
 
-Let's have look at the common scenarios in which this can happen.  
-**Sender forgets to close the channel** 
+Let's look at the common scenarios in which this happens.
+
+**The sender forgets to close the channel**
 
 ```go
 func danglingReceiver(ch chan string) {
-	for val := range ch {
-		fmt.Println(val)
-	}
+    for val := range ch {
+        fmt.Println(val)
+    }
 
-	fmt.Println("Done.. exiting")
+    fmt.Println("Done, exiting")
 }
 
 func handler(arr []string) {
-	ch := make(chan string, len(arr))
+    ch := make(chan string, len(arr))
 
-	for _, data := range arr {
-		ch <- data
-	}
+    for _, data := range arr {
+        ch <- data
+    }
 
-	go danglingReceiver(ch)
+    go danglingReceiver(ch)
 }
 ```
 
-Here the Goroutine is expected to process the data sent on the channel by the handler function and terminate. But in reality, the channel even though its empty it's not closed. So, the worker keeps waiting for sender to send more data and never terminates.
+The goroutine is supposed to process the values the handler sent and then
+exit. But although the channel is empty after the values are read, it is never
+closed, so the `range` loop keeps waiting for more values and the goroutine
+never exits. Calling `close(ch)` after the last send fixes it.
 
-**Wrong Placement of Sender**
+**Returning early before sending**
+
 ```go
 func danglingReceiver(ch chan []string) {
-	val := <-ch
-	fmt.Println(val)
+    val := <-ch
+    fmt.Println(val)
 }
 
 func handler() error {
-	ch := make(chan []string)
-	go danglingReceiver(ch)
+    ch := make(chan []string)
+    go danglingReceiver(ch)
 
-	data, err := someOtherValidationLogic()
-	if err != nil {
-		return errors.New("Validation Error, Exiting..!")
-	}
+    data, err := someOtherValidationLogic()
+    if err != nil {
+        return fmt.Errorf("validation failed: %w", err)
+    }
 
-	ch <- data
-
-	return nil
+    ch <- data
+    return nil
 }
 ```
-Here, the handler spawns the Goroutine and quickly moves on to some validation logic. But, in the case of that validation returning an error the handler exits, and there is no one present to send data to the channel. Hence, the receiver is abandoned waiting for the data.
 
+The handler starts the goroutine and moves on to some validation. If the
+validation fails, the handler returns and nothing ever sends on the channel, so
+the receiver waits forever.
 
-**Solution to The Abandoned Receiver**  
-To summarize, the receivers are dangling as they expect incoming data from the channel. Thus, the receiver gets blocked and wait forever.
+**Solution to the abandoned receiver**
 
-The solution is to defer closing of the channel.
-```go
-defer close(ch)
-```
-It's a recommendation practice to defer the channel's closing as you spawn a new channel.Which will ensure the channel is closed when the function exits.
-This can help the receiver to tell if channel is closed and it will terminate accordingly.
+The receiver is stuck because it waits for a value that never comes. The
+solution is for the sending side to close the channel when it is done, so the
+receiver can see that no more values will arrive. Deferring the close right
+after creating the channel guarantees it happens on every return path,
+including early returns:
 
 ```go
 func danglingReceiver(ch chan int) {
-	//This won't be blocked
-	val := <-ch
-	fmt.Println(val)
+    // Receives the zero value once ch is closed, so this doesn't block forever.
+    val, ok := <-ch
+    if !ok {
+        return
+    }
+    fmt.Println(val)
 }
 
 func handler() {
-	ch := make(chan int)
+    ch := make(chan int)
+    // Close the channel on every return path.
+    defer close(ch)
 
-
-	//Defer the closing of channel
-	defer close(ch)
-	go danglingReceiver(ch)
+    go danglingReceiver(ch)
 }
 ```
 
+Only the sender should close a channel, and only once: sending on a closed
+channel, or closing it twice, panics.
 
+## Preventing and Detecting Leaks
 
+* Give every goroutine a clear way to exit, such as a closed channel or a
+  cancelled [context][1]. See the [Context Timeouts][2] section for patterns
+  that tie goroutines to the lifetime of a request.
+* Watch the number of running goroutines in production, for example with
+  `runtime.NumGoroutine()` or the `/debug/pprof/goroutine` endpoint of
+  [net/http/pprof][3] (which should never be exposed publicly).
+* Check for leaks in tests with a package such as [goleak][4], which fails a
+  test if goroutines are still running when it finishes.
+
+[1]: https://pkg.go.dev/context
+[2]: ../error-handling-logging/context-timeouts.md
+[3]: https://pkg.go.dev/net/http/pprof
+[4]: https://github.com/uber-go/goleak
