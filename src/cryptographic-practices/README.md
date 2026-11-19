@@ -132,6 +132,7 @@ import (
     "crypto/aes"
     "crypto/cipher"
     "crypto/rand"
+    "errors"
     "io"
     "log"
 )
@@ -169,7 +170,7 @@ func decrypt(val []byte, secret []byte) ([]byte, error) {
 
     size := aead.NonceSize()
     if len(val) < size {
-        return nil, err
+        return nil, errors.New("ciphertext too short")
     }
 
     result, err := aead.Open(nil, val[:size], val[size:], nil)
