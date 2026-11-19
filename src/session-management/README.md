@@ -15,53 +15,61 @@ on a trusted system. In the code example provided, our application generates a
 session using JWT. This is done in the following function:
 
 ```go
-// create a JWT and put in the clients cookie
-func setToken(res http.ResponseWriter, req *http.Request) {
-  ...
+// handleLogin creates a JWT and puts it in the client's cookie.
+func handleLogin(logger *slog.Logger, secret []byte) http.Handler {
+    ...
 }
 ```
 We must ensure that the algorithms used to generate our session identifier are
 sufficiently random, to prevent session brute forcing.
 
-**Important:** Never hardcode secrets in source code. Use environment variables:
+**Important:** Never hardcode secrets in source code. Read them from the
+environment (or a secrets manager) once at startup, and refuse to start without
+them:
 
 ```go
 // INSECURE - Never do this
 signedToken, _ := token.SignedString([]byte("secret"))
 
-// SECURE - Use environment variables
-secret := os.Getenv("JWT_SECRET")
+// SECURE - Read the secret at startup and pass it to the handlers
+secret := getenv("JWT_SECRET")
 if secret == "" {
-    log.Fatal("JWT_SECRET environment variable required")
+    return errors.New("JWT_SECRET environment variable is required")
 }
+...
 token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-signedToken, err := token.SignedString([]byte(secret))
+signedToken, err := token.SignedString(secret)
 if err != nil {
-    // Handle error - never ignore errors from cryptographic operations
-    log.Printf("Error signing token: %v", err)
+    // Never ignore errors from cryptographic operations.
+    logger.ErrorContext(r.Context(), "signing token", "error", err)
+    http.Error(w, "Internal server error", http.StatusInternalServerError)
     return
 }
 ```
 
-Now that we have a sufficiently strong token, we must also set
-the `Domain`, `Path`, `Expires`, `HttpOnly`, `Secure`, and `SameSite` for our
-cookies. In this example the `Expires` value is set to 30 minutes since we are
-considering our application a low-risk application.
+Now that we have a sufficiently strong token, we must also set the `Path`,
+lifetime, `HttpOnly`, `Secure`, and `SameSite` attributes of our cookie. We
+leave `Domain` unset, which limits the cookie to the exact host that set it.
+In this example the cookie lives for 30 minutes, since we are considering our
+application a low-risk application. `MaxAge` is used rather than `Expires`
+because it is relative, so it does not depend on the client's clock.
 
 ```go
-// Our cookie parameter
-cookie := http.Cookie{
-    Name:     "Auth",
-    Value:    signedToken,
-    Expires:  expireCookie, // 30 min
-    HttpOnly: true,         // Prevents JavaScript access (mitigates XSS)
-    Path:     "/",
-    Domain:   "127.0.0.1",
-    Secure:   true,                    // Only sent over HTTPS
-    SameSite: http.SameSiteStrictMode, // CSRF protection
+// sessionCookie returns the session cookie holding token, which the browser
+// keeps for maxAge seconds.
+func sessionCookie(token string, maxAge int) *http.Cookie {
+    return &http.Cookie{
+        Name:     cookieName,
+        Value:    token,
+        Path:     "/",
+        MaxAge:   maxAge,
+        HttpOnly: true,                    // Prevents JavaScript access (mitigates XSS)
+        Secure:   true,                    // Only sent over HTTPS
+        SameSite: http.SameSiteStrictMode, // CSRF protection
+    }
 }
 
-http.SetCookie(res, &cookie) // Set the cookie
+http.SetCookie(w, sessionCookie(signedToken, int(sessionTimeout.Seconds())))
 ```
 
 The `SameSite` attribute is critical for CSRF protection. Go supports three values:
@@ -90,11 +98,20 @@ user's session. The best practice regarding this issue, is to use HTTPS in all
 requests. In the following example our server is using HTTPS.
 
 ```go
-err := http.ListenAndServeTLS(":443", "cert/cert.pem", "cert/key.pem", nil)
-if err != nil {
-  log.Fatal("ListenAndServe: ", err)
+srv := &http.Server{
+    Addr:              *addr,
+    Handler:           newServer(logger, []byte(secret)),
+    ReadHeaderTimeout: readHeaderTimeout,
+    ReadTimeout:       readTimeout,
+    WriteTimeout:      writeTimeout,
+    IdleTimeout:       idleTimeout,
 }
+...
+srv.ListenAndServeTLS(certFile, keyFile)
 ```
+
+The timeouts matter too: without them, slow clients can hold connections open
+indefinitely (see [HTTP Server Security][1]).
 
 In case of highly sensitive or critical operations, the token should be
 generated per-request, instead of per-session. Always make sure the token is
@@ -104,20 +121,25 @@ forcing.
 The final aspect to consider in session management, is the **Logout**
 functionality. The application should provide a way to logout from all pages
 that require authentication, as well as fully terminate the associated session
-and connection. In our example, when a user logs out, the cookie is deleted
-from the client. The same action should be taken in the location where we store
-our user session information.
+and connection. In our example, logging out is a `POST` request, so other sites
+cannot trigger it with a link, and it deletes the cookie from the client. The
+same action should be taken in the location where we store our user session
+information.
 
 ```go
-...
-cookie, err := req.Cookie("Auth") //Our auth token
-if err != nil {
-  res.Header().Set("Content-Type", "text/html")
-  fmt.Fprint(res, "Unauthorized - Please login <br>")
-  fmt.Fprintf(res, "<a href=\"login\"> Login </a>")
-  return
+// handleLogout deletes the session cookie.
+func handleLogout() http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        // A cookie is only replaced if Name, Path and Domain match, so build
+        // it the same way as at login. A negative MaxAge deletes it.
+        http.SetCookie(w, sessionCookie("", -1))
+        http.Redirect(w, r, "/", http.StatusSeeOther)
+    })
 }
-...
 ```
 
-The full example can be found in [session.go](session.go)
+The full example can be found in [session.go](session.go), and its tests, which
+check that forged, unsigned and expired tokens are rejected, in
+[session_test.go](session_test.go).
+
+[1]: ../communication-security/http-server-security.md
