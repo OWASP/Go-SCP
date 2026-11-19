@@ -64,12 +64,59 @@ logging (e.g. `debug`, `info`, `warn`, `error`, `fatal`, `panic`) and formatters
 support (e.g. logstash). These are two important features to make logs usable
 (e.g. for integration with a Security Information and Event Management system).
 
-Most, if not all third-party logging packages offer these and other features.
-The ones below are some of the most popular third-party logging packages:
+### log/slog (Recommended - Go 1.21+)
 
-* [Logrus][1] - https://github.com/Sirupsen/logrus
-* [glog][2]   - https://github.com/golang/glog
-* [loggo][3]  - https://github.com/juju/loggo
+As of Go 1.21, the standard library includes [log/slog][5], a structured logging
+package. This is now the recommended approach for most Go applications:
+
+```go
+package main
+
+import (
+    "log/slog"
+    "os"
+)
+
+func main() {
+    // JSON handler for production (structured logging)
+    logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+        Level: slog.LevelInfo,
+    }))
+    slog.SetDefault(logger)
+
+    // Log with structured fields
+    slog.Info("user login attempt",
+        slog.String("username", "john"),
+        slog.String("ip", "192.168.1.1"),
+        slog.Bool("success", true),
+    )
+
+    // Log errors with context
+    slog.Error("database connection failed",
+        slog.String("host", "db.example.com"),
+        slog.Int("port", 5432),
+        slog.Any("error", err),
+    )
+}
+```
+
+Output (JSON):
+```json
+{"time":"2024-01-15T10:30:00Z","level":"INFO","msg":"user login attempt","username":"john","ip":"192.168.1.1","success":true}
+```
+
+**Security considerations with slog:**
+- Use `slog.String()` for user input to prevent log injection
+- Never log sensitive data (passwords, tokens, PII)
+- Configure appropriate log levels for production vs development
+
+### Third-Party Alternatives
+
+If you need features not in slog, or are using Go < 1.21:
+
+* [Logrus][1] - https://github.com/Sirupsen/logrus (mature, widely used)
+* [zerolog][6] - https://github.com/rs/zerolog (zero-allocation JSON logger)
+* [zap][7] - https://github.com/uber-go/zap (high-performance structured logging)
 
 Here's an important note regarding [Go's log package][0]: Fatal and Panic
 functions have different behaviors after logging: Panic functions call `panic`
@@ -94,25 +141,23 @@ tampering has taken place.
 
 ```go
 {...}
-// Get our known Log checksum from checksum file.
-logChecksum, err := ioutil.ReadFile("log/checksum")
-str := string(logChecksum) // convert content to a 'string'
-
-// Compute our current log's SHA256 hash
-b, err := ComputeSHA256("log/log")
+// Get our known log checksum from the checksum file.
+stored, err := root.ReadFile(*checksumFile)
 if err != nil {
-  fmt.Printf("Err: %v", err)
-} else {
-  hash := hex.EncodeToString(b)
-  // Compare our calculated hash with our stored hash
-  if str == hash {
-    // Ok the checksums match.
-    fmt.Println("Log integrity OK.")
-  } else {
-    // The file integrity has been compromised...
-    fmt.Println("File Tampering detected.")
-  }
+    return fmt.Errorf("read checksum: %w", err)
 }
+
+// Compute our current log's SHA-256 hash.
+b, err := ComputeSHA256(root, *logFile)
+if err != nil {
+    return fmt.Errorf("hash log: %w", err)
+}
+
+// Compare our calculated hash with our stored hash.
+if hex.EncodeToString(b) != strings.TrimSpace(string(stored)) {
+    return errors.New("file tampering detected")
+}
+_, _ = fmt.Fprintln(stdout, "Log integrity OK.")
 {...}
 ```
 
@@ -121,8 +166,11 @@ important to note that the log-file hashes must be stored in a safe place, and
 compared with the current log hash to verify integrity before any updates to the
 log. [Working demo available in the repository][4].
 
-[0]: https://golang.org/pkg/log/
+[0]: https://pkg.go.dev/log
 [1]: https://github.com/Sirupsen/logrus
 [2]: https://github.com/golang/glog
 [3]: https://github.com/juju/loggo
 [4]: ./assets/log-integrity.go
+[5]: https://pkg.go.dev/log/slog
+[6]: https://github.com/rs/zerolog
+[7]: https://github.com/uber-go/zap

@@ -61,11 +61,15 @@ func (fs justFilesFilesystem) Open(name string) (http.File, error) {
 }
 ```
 
-Then we simply use it in our `http.ListenAndServe` as follows:
+Then we simply use it in our server as follows:
 
 ```go
-fs := justFilesFilesystem{http.Dir("tmp/static/")}
-http.ListenAndServe(":8080", http.StripPrefix("/tmp/static", http.FileServer(fs)))
+fs := justFilesFilesystem{http.Dir(*dir)}
+srv := &http.Server{
+    Addr:              *addr,
+    Handler:           http.StripPrefix("/tmp/static", http.FileServer(fs)),
+    ReadHeaderTimeout: readHeaderTimeout,
+}
 ```
 
 Note that our application is only allowing the `tmp/static/` path to be
@@ -184,7 +188,9 @@ The steps involved in the implementation of this system are as follows:
 11. Monitor and review the AMS performance.
 12. Maintain the AMS and ensure continual improvement.
 
-A more in-depth analysis of this implementation can be found [here][5].
+For a more in-depth analysis of this implementation, see Avinash Kadam's GIAC
+paper [Implementation Methodology for Information Security Management System
+(to comply with BS 7799 Requirements)][5].
 
 [1]: https://www.owasp.org/index.php/Least_privilege
 [2]: https://godoc.org/golang.org/x/net/webdav

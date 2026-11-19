@@ -19,15 +19,21 @@ filetype ([filetype.go][0])
 
 ```go
 {...}
-// Write our file to a buffer
-// Why 512 bytes? See http://golang.org/pkg/net/http/#DetectContentType
+// Write the start of our file to a buffer. Why 512 bytes? See
+// https://pkg.go.dev/net/http#DetectContentType
 buff := make([]byte, 512)
-
-_, err = file.Read(buff)
+n, readErr := io.ReadFull(file, buff)
+if errors.Is(readErr, io.ErrUnexpectedEOF) {
+    readErr = nil // a file shorter than 512 bytes is fine
+}
 {...}
-//Result - Our detected filetype
-filetype := http.DetectContentType(buff)
+// Result - our detected filetype, from the bytes actually read
+return http.DetectContentType(buff[:n]), nil
 ```
+
+The example opens the uploaded file through an [`os.Root`][1] for the upload
+directory, so a crafted file name such as `../../etc/passwd` cannot reach
+files outside it (see [Path Traversal][2]).
 
 After identifying the filetype, an additional step is required to validate the
 filetype against a whitelist of allowed filetypes. In the example, this is
@@ -35,15 +41,13 @@ achieved in the following section:
 
 ```go
 {...}
+// Validate the detected type against an allowlist.
 switch filetype {
-case "image/jpeg", "image/jpg":
-  fmt.Println(filetype)
-case "image/gif":
-  fmt.Println(filetype)
-case "image/png":
-  fmt.Println(filetype)
+case "image/jpeg", "image/gif", "image/png":
+    _, _ = fmt.Fprintln(stdout, filetype)
+    return nil
 default:
-  fmt.Println("unknown file type uploaded")
+    return fmt.Errorf("file type not allowed: %s", filetype)
 }
 {...}
 ```
@@ -80,3 +84,5 @@ Set the server permissions regarding the application files and resources to
        against user-supplied input.
 
 [0]: ./filetype/filetype.go
+[1]: https://pkg.go.dev/os#Root
+[2]: path-traversal.md

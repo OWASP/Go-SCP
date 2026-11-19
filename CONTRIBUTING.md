@@ -25,8 +25,9 @@ control system and other tools around Git:
 * [Git Flow Hooks][5] - some useful hooks for git-flow (AVH Edition) by
   [Jaspern Brouwer][6].
 
-The book sources are written on [Markdown format][7], taking advantage of
-[gitbook-cli][8].
+The book sources are written in [Markdown format][7]. The PDF, ePub and DOCX
+editions are built with [pandoc][17] in Docker; [gitbook-cli][8] is still
+available for a live preview and for Mobi.
 
 ## Environment setup
 
@@ -37,7 +38,9 @@ your system:
    according to your system's configuration;
 2. Now that you have Git, you should [install Git Flow][10] and
    [Git Flow Hooks][11];
-3. Last but not least, [setup GitBook CLI][12].
+3. To build the book, install [Docker][16];
+4. To check the Go examples, install [Go][18] (the version in `go.mod`);
+5. Optionally, for a live preview, [setup GitBook CLI][12].
 
 ## How to start
 
@@ -48,13 +51,13 @@ Fork the `go-webapp-scp` repo and then clone your own repository.
 The next step is to enable Git Flow hooks; enter your local repository
 
 ```shell
-$ cd go-webapp-scp
+cd go-webapp-scp
 ```
 
 and run
 
 ```shell
-$ git flow init
+git flow init
 ```
 
 We're good to go with git flow default values.
@@ -63,13 +66,13 @@ In a nutshell, everytime you want to work on a section, you should start a
 "feature":
 
 ```shell
-$ git flow feature start my-new-section
+git flow feature start my-new-section
 ```
 
 To keep your work safe, don't forget to publish your feature:
 
 ```shell
-$ git flow feature publish
+git flow feature publish
 ```
 
 Once you're ready to merge your work with others, you should go to the main
@@ -85,7 +88,7 @@ When you find a typo or something that needs to be fixed, you should start a
 "hotfix"
 
 ```shell
-$ git flow hotfix start
+git flow hotfix start
 ```
 
 This will apply your change on both `develop` and `master` branches.
@@ -99,23 +102,50 @@ To get Git Book tracking file changes and to live-preview your work, you just
 need to run the following command on a shell session
 
 ```shell
-$ npm run serve
+npm run serve
 ```
 
 The shell output will include a `localhost` URL where you can preview the book.
 
 ## How to Build
 
-If you have `node` installed, you can run:
+Build the PDF, ePub and DOCX editions into `dist/` with:
 
-```
-$ npm i && node_modules/.bin/gitbook install && npm run build
+```shell
+./build-books.sh
 ```
 
-You can also build the book using an ephemeral Docker container:
+Only Docker is needed: the script builds a pandoc image from
+`Dockerfile.pandoc` and runs it. The chapter order comes from
+`src/SUMMARY.md`. Links between chapters are rewritten so they work inside
+the books, and the build fails if a link cannot be resolved, so a broken link
+is caught before it is published. Set `FORMATS` to build only some editions
+(for example `FORMATS=epub ./build-books.sh`) and `OUT_DIR` to write them
+somewhere else inside the repository.
 
+The Go examples under `src/` form one module. Check them with:
+
+```shell
+go vet ./... && go test ./...
 ```
-$ docker-compose run -u node:node --rm build
+
+GitHub Actions runs both checks on every pull request and keeps the built books
+as a downloadable artifact. When a release is published, the books are
+attached to it.
+
+### Legacy GitBook build
+
+The GitBook toolchain still works for Mobi. If you have `node` installed, you
+can run:
+
+```shell
+npm i && node_modules/.bin/gitbook install && npm run build
+```
+
+or, using an ephemeral Docker container:
+
+```shell
+docker-compose run -u node:node --rm build
 ```
 
 [1]: https://git-scm.com
@@ -133,5 +163,7 @@ $ docker-compose run -u node:node --rm build
 [14]: http://help.github.com/articles/about-pull-requests
 [15]: https://github.com/Checkmarx/Go-SCP
 [16]: https://www.docker.com/
+[17]: https://pandoc.org
+[18]: https://go.dev/dl/
 [17]: https://nodejs.org/en/
 [18]: https://calibre-ebook.com/download

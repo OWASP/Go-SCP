@@ -1,0 +1,60 @@
+name: Build
+
+# Check the Go examples and build the books on every push and pull request,
+# and attach the books to each published release.
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  examples:
+    name: Go examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - run: go vet ./...
+      - run: go test -race ./...
+
+  books:
+    name: Books
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build PDF, ePub and DOCX
+        run: OUT_DIR=_book/ci ./build-books.sh
+      - uses: actions/upload-artifact@v7
+        with:
+          name: books
+          path: _book/ci/
+          if-no-files-found: error
+
+  release:
+    name: Attach books to release
+    if: github.event_name == 'release'
+    needs: [examples, books]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: books
+          path: books
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          # Passed through the environment, not inlined into the script, so
+          # a crafted tag name cannot inject shell commands.
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" books/* --clobber

@@ -123,7 +123,8 @@ The example below illustrates encryption and decryption using an [AES-256][9]
 (*256 bits/32 bytes*) based key, with a clear separation of concerns such as
 encryption, decryption and secret generation. The `secret` method is a
 convenient option which helps generate a secret. The source code sample was
-taken from [here][10] but has been slightly modified.
+adapted, with slight modifications, from the article
+[Data encryption and decryption with a secret key example in Golang][10].
 
 ```go
 package main
@@ -132,6 +133,7 @@ import (
     "crypto/aes"
     "crypto/cipher"
     "crypto/rand"
+    "errors"
     "io"
     "log"
 )
@@ -147,7 +149,8 @@ func encrypt(val []byte, secret []byte) ([]byte, error) {
         return nil, err
     }
 
-    nonce := make([]byte, aead.NonceSize())
+    buffer := make([]byte, aead.NonceSize()+aead.Overhead()+len(val))
+    nonce := buffer[:aead.NonceSize()]
     if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
         return nil, err
     }
@@ -168,7 +171,7 @@ func decrypt(val []byte, secret []byte) ([]byte, error) {
 
     size := aead.NonceSize()
     if len(val) < size {
-        return nil, err
+        return nil, errors.New("ciphertext too short")
     }
 
     result, err := aead.Open(nil, val[:size], val[size:], nil)

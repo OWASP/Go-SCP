@@ -42,6 +42,79 @@ if f < 0 {
 {...}
 ```
 
+### Modern Error Handling (Go 1.13+)
+
+Go 1.13 introduced error wrapping with `%w` and the `errors.Is`/`errors.As`
+functions. These enable proper error chain handling:
+
+**Error Wrapping:**
+
+```go
+// RECOMMENDED: Wrap errors to preserve context
+func readConfig(path string) (*Config, error) {
+    data, err := os.ReadFile(path)
+    if err != nil {
+        // Wrap the error with additional context
+        return nil, fmt.Errorf("reading config file %s: %w", path, err)
+    }
+
+    var config Config
+    if err := json.Unmarshal(data, &config); err != nil {
+        return nil, fmt.Errorf("parsing config file %s: %w", path, err)
+    }
+
+    return &config, nil
+}
+```
+
+**Checking Error Types:**
+
+```go
+// Check if error is a specific type (follows error chain)
+if errors.Is(err, os.ErrNotExist) {
+    // Handle file not found
+    log.Printf("Config file does not exist, using defaults")
+    return defaultConfig(), nil
+}
+
+// Check for specific error type and extract it
+var pathErr *os.PathError
+if errors.As(err, &pathErr) {
+    log.Printf("Path error on: %s", pathErr.Path)
+}
+
+// Check for network timeout
+var netErr net.Error
+if errors.As(err, &netErr) && netErr.Timeout() {
+    // Handle timeout - maybe retry
+}
+```
+
+**Security Considerations:**
+- Always wrap errors when adding context
+- Never expose internal error details to users
+- Use `errors.Is` instead of direct comparison for sentinel errors
+- Log detailed errors server-side, return generic messages to clients
+
+```go
+// SECURE: Don't leak internal errors to users
+func handleRequest(w http.ResponseWriter, r *http.Request) {
+    result, err := processRequest(r)
+    if err != nil {
+        // Log detailed error for debugging
+        slog.Error("request processing failed",
+            slog.String("path", r.URL.Path),
+            slog.Any("error", err))
+
+        // Return generic error to user
+        http.Error(w, "An error occurred processing your request",
+            http.StatusInternalServerError)
+        return
+    }
+    // ...
+}
+```
+
 When dealing with error logs, developers should ensure no sensitive information
 is disclosed in the error responses, as well as guarantee that no error handlers
 leak information (e.g. debugging, or stack trace information).

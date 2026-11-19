@@ -27,7 +27,7 @@ Here's an example of a prepared statement with parameterized queries:
 
 ```go
 customerName := r.URL.Query().Get("name")
-db.Exec("UPDATE creditcards SET name=? WHERE customerId=?", customerName, 233, 90)
+db.Exec("UPDATE creditcards SET name=? WHERE customerId=?", customerName, 233)
 ```
 
 Sometimes a prepared statement is not what you want. There might be several

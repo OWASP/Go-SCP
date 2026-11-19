@@ -15,10 +15,10 @@ securely_". We recommend you read all other "Authentication and Password
 Management" sections, since they cover recommendations about reporting back
 wrong authentication data and how to handle logging.
 
-One other preliminary recommendation is as follow: for sequential authentication
-implementations (like Google does nowadays), validation should happen only on
-the completion of all data input, on a trusted system (e.g. the server).
-
+One other preliminary recommendation is as follows: for sequential
+authentication implementations (for example, asking for the username and the
+password on separate pages), validation should happen only on the completion of
+all data input, on a trusted system (e.g. the server).
 
 ## Storing password securely: the theory
 
@@ -128,19 +128,99 @@ standards reviewed and approved by experts. It is therefore important to use
 them instead of trying to re-invent the wheel.
 
 In the case of password storage, the hashing algorithms recommended by
-[OWASP][2] are [`bcrypt`][2], [`PDKDF2`][3], [`Argon2`][4] and [`scrypt`][5].
-Those take care of hashing and salting passwords in a robust way. Go authors
-provide an extended package for cryptography, that is not part of the standard
-library. It provides robust implementations for most of the aforementioned
-algorithms. It can be downloaded using  `go get`:
+[OWASP][2] are (in order of preference): [**Argon2id**][4], [bcrypt][3],
+[scrypt][7], and [PBKDF2][5]. Those take care of hashing and salting passwords
+in a robust way. Go authors provide an extended package for cryptography, that
+is not part of the standard library. It provides robust implementations for most
+of the aforementioned algorithms. It can be downloaded using `go get`:
 
 ```
 go get golang.org/x/crypto
 ```
 
-The following example shows how to use bcrypt, which should be good enough for
-most of the situations. The advantage of bcrypt is that it is simpler to use,
-and is therefore less error-prone.
+### Argon2id (Recommended)
+
+Argon2id is the winner of the Password Hashing Competition and is OWASP's
+first recommendation. It provides excellent resistance against both GPU-based
+and side-channel attacks.
+
+```go
+package main
+
+import (
+    "crypto/rand"
+    "crypto/subtle"
+    "encoding/base64"
+    "fmt"
+    "strings"
+
+    "golang.org/x/crypto/argon2"
+)
+
+// Argon2id parameters - OWASP recommended minimum values
+const (
+    argonTime    = 1         // Number of iterations
+    argonMemory  = 64 * 1024 // Memory in KiB (64 MB)
+    argonThreads = 4         // Number of threads
+    argonKeyLen  = 32        // Length of the derived key
+    argonSaltLen = 16        // Length of the salt
+)
+
+func hashPassword(password string) (string, error) {
+    // Generate a random salt
+    salt := make([]byte, argonSaltLen)
+    if _, err := rand.Read(salt); err != nil {
+        return "", err
+    }
+
+    // Hash the password with Argon2id
+    hash := argon2.IDKey([]byte(password), salt, argonTime, argonMemory, argonThreads, argonKeyLen)
+
+    // Encode for storage: $argon2id$v=19$m=65536,t=1,p=4$<salt>$<hash>
+    b64Salt := base64.RawStdEncoding.EncodeToString(salt)
+    b64Hash := base64.RawStdEncoding.EncodeToString(hash)
+
+    return fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s",
+        argon2.Version, argonMemory, argonTime, argonThreads, b64Salt, b64Hash), nil
+}
+
+func verifyPassword(password, encodedHash string) (bool, error) {
+    // Parse the encoded hash
+    parts := strings.Split(encodedHash, "$")
+    if len(parts) != 6 {
+        return false, fmt.Errorf("invalid hash format")
+    }
+
+    var version int
+    var memory, time uint32
+    var threads uint8
+    _, err := fmt.Sscanf(parts[3], "m=%d,t=%d,p=%d", &memory, &time, &threads)
+    if err != nil {
+        return false, err
+    }
+    _, _ = fmt.Sscanf(parts[2], "v=%d", &version)
+
+    salt, err := base64.RawStdEncoding.DecodeString(parts[4])
+    if err != nil {
+        return false, err
+    }
+    expectedHash, err := base64.RawStdEncoding.DecodeString(parts[5])
+    if err != nil {
+        return false, err
+    }
+
+    // Compute hash with same parameters
+    computedHash := argon2.IDKey([]byte(password), salt, time, memory, threads, uint32(len(expectedHash)))
+
+    // Use constant-time comparison to prevent timing attacks
+    return subtle.ConstantTimeCompare(expectedHash, computedHash) == 1, nil
+}
+```
+
+### bcrypt (Good Alternative)
+
+The following example shows how to use bcrypt, which is simpler to use and is
+therefore less error-prone. It's a good choice when you need simplicity.
 
 ```go
 package main
@@ -213,7 +293,7 @@ if bcrypt.CompareHashAndPassword([]byte(expectedPassword), password) != nil {
  ```
 
 If you're not comfortable with password hashing and comparison
-options/parameters, better delegating the task to specialized third-party
+options/parameters, better delegate the task to specialized third-party
 package with safe defaults. Always opt for an actively maintained package and
 remind to check for known issues.
 
@@ -225,8 +305,9 @@ remind to check for known issues.
 [^1]: Hashing functions are the subject of Collisions but recommended hashing functions have a really low collisions probability
 
 [1]: ../cryptographic-practices/pseudo-random-generators.md
-[2]: https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet
-[3]: https://godoc.org/golang.org/x/crypto/bcrypt
-[4]: https://github.com/p-h-c/phc-winner-argon2
-[5]: https://godoc.org/golang.org/x/crypto/pbkdf2
+[2]: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+[3]: https://pkg.go.dev/golang.org/x/crypto/bcrypt
+[4]: https://pkg.go.dev/golang.org/x/crypto/argon2
+[5]: https://pkg.go.dev/golang.org/x/crypto/pbkdf2
 [6]: https://github.com/ermites-io/passwd
+[7]: https://pkg.go.dev/golang.org/x/crypto/scrypt
