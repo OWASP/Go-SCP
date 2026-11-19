@@ -9,30 +9,36 @@ This is the OWASP Go Secure Coding Practices Guide - a GitBook-based documentati
 ## Build Commands
 
 ```bash
-# Install dependencies and build all formats (PDF, ePub, Mobi, DOCX)
-npm i && node_modules/.bin/gitbook install && npm run build
+# Build PDF, ePub and DOCX into dist/ with pandoc in Docker
+./build-books.sh
 
-# Live preview with hot reload
-npm run serve
+# Build only some formats, or into another directory inside the repository
+FORMATS=epub OUT_DIR=_book/test ./build-books.sh
 
-# Build individual formats
-npm run build:pdf
-npm run build:epub
-npm run build:mobi
-npm run build:docx
+# Check the Go examples (one module rooted at the repository root)
+go vet ./... && go test ./...
 
-# Build using Docker (alternative)
-docker-compose run -u node:node --rm build
+# Legacy GitBook toolchain: live preview, and Mobi
+npm i && node_modules/.bin/gitbook install && npm run serve
 ```
+
+The pandoc build fails if a link between chapters cannot be resolved
+(`fix-internal-links.lua`). Code blocks inside a Markdown blockquote break the
+legacy GitBook build if they contain `{{ }}`.
 
 ## Project Structure
 
 - `src/` - All book content in Markdown format
 - `src/SUMMARY.md` - Book table of contents (defines chapter order)
 - `src/README.md` - Book introduction
-- `dist/` - Generated output files (PDF, ePub, Mobi)
-- `book.json` - GitBook configuration
-- `.go` files in `src/` subdirectories - Example code snippets referenced by chapters
+- `dist/` - Generated output files (PDF, ePub, Mobi, DOCX)
+- `build-books.sh`, `Dockerfile.pandoc`, `book-metadata.yaml`, `book-cover.tex`,
+  `fix-internal-links.lua`, `wrap-wide-tables.lua` - pandoc build
+- `book.json`, `package.json`, `Dockerfile` - legacy GitBook build
+- `go.mod` and `.go` files in `src/` subdirectories - runnable examples
+  referenced by chapters, each with tests; keep the code quoted in a chapter in
+  sync with its example file
+- `.github/workflows/build.yml` - CI: Go checks and book build
 
 ## Content Organization
 

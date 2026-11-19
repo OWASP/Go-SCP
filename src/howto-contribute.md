@@ -25,8 +25,9 @@ control system and other tools around Git:
 * [Git Flow Hooks][5] - some useful hooks for git-flow (AVH Edition) by
   [Jaspern Brouwer][6].
 
-The book sources are written on [Markdown format][7], taking advantage of
-[gitbook-cli][8].
+The book sources are written in [Markdown format][7]. The PDF, ePub and DOCX
+editions are built with [pandoc][17] in Docker; [gitbook-cli][8] is still
+available for a live preview and for Mobi.
 
 ## Environment setup
 
@@ -37,7 +38,9 @@ your system:
    according to your system's configuration;
 2. Now that you have Git, you should [install Git Flow][10] and
    [Git Flow Hooks][11];
-3. Last but not least, [setup GitBook CLI][12].
+3. To build the book, install [Docker][16];
+4. To check the Go examples, install [Go][18] (the version in `go.mod`);
+5. Optionally, for a live preview, [setup GitBook CLI][12].
 
 ## How to start
 
@@ -106,13 +109,40 @@ The shell output will include a `localhost` URL where you can preview the book.
 
 ## How to Build
 
-If you have `node` installed, you can run:
+Build the PDF, ePub and DOCX editions into `dist/` with:
+
+```
+$ ./build-books.sh
+```
+
+Only Docker is needed: the script builds a pandoc image from
+`Dockerfile.pandoc` and runs it. The chapter order comes from
+`src/SUMMARY.md`. Links between chapters are rewritten so they work inside
+the books, and the build fails if a link cannot be resolved, so a broken link
+is caught before it is published. Set `FORMATS` to build only some editions
+(for example `FORMATS=epub ./build-books.sh`) and `OUT_DIR` to write them
+somewhere else inside the repository.
+
+The Go examples under `src/` form one module. Check them with:
+
+```
+$ go vet ./... && go test ./...
+```
+
+GitHub Actions runs both checks on every pull request and keeps the built books
+as a downloadable artifact. When a release is published, the books are
+attached to it.
+
+### Legacy GitBook build
+
+The GitBook toolchain still works for Mobi. If you have `node` installed, you
+can run:
 
 ```
 $ npm i && node_modules/.bin/gitbook install && npm run build
 ```
 
-You can also build the book using an ephemeral Docker container:
+or, using an ephemeral Docker container:
 
 ```
 $ docker-compose run -u node:node --rm build
@@ -133,5 +163,7 @@ $ docker-compose run -u node:node --rm build
 [14]: http://help.github.com/articles/about-pull-requests
 [15]: https://github.com/Checkmarx/Go-SCP
 [16]: https://www.docker.com/
+[17]: https://pandoc.org
+[18]: https://go.dev/dl/
 [17]: https://nodejs.org/en/
 [18]: https://calibre-ebook.com/download
